@@ -1,18 +1,9 @@
 {-# OPTIONS --without-K --rewriting #-}
 
 open import HoTT
+open import preliminaries
 
-U = Type lzero
-LEM = (P : U) → is-prop P → P ⊔ ¬ P
-
-endomap-natural : (f : (X : U) → X → X) → Type (lsucc lzero)
-endomap-natural f = (X Y : U) → (e : X ≃ Y) → (x : X)→  –> e (f X x) == f Y (–> e x)
-
-data Singleton {i} {A : Set i} (x : A) : Set i where
-  _with≡_ : (y : A) → x == y → Singleton x
-
-inspect : ∀ {i} {A : Set i} (x : A) → Singleton x
-inspect x = x with≡ idp
+module theorem1 where
 
 theorem-1-A : (f : (X : U) → X → X) → endomap-natural f → ¬ ((x : Bool) → f Bool x == x) → LEM
 theorem-1-A f k q P u with inspect (f (P ⊔ Unit) (inr unit))
@@ -64,19 +55,6 @@ theorem-1-A f k q P u | inr unit with≡ z = inr (claim-C z)
   claim-C with claim-B
   claim-C | inl i = claim-C-l i
   claim-C | inr i = claim-C-r i
-
-–>-preserves-≠ : {X Y : U} → (e : X ≃ Y) → {x x' : X} → x ≠ x' → –> e x ≠ –> e x'
-–>-preserves-≠ e = inj-preserves-≠ (–>-is-inj e)
-
-<–-preserves-≠ : {X Y : U} → (e : X ≃ Y) → {y y' : Y} → y ≠ y' → <– e y ≠ <– e y'
-<–-preserves-≠ e = inj-preserves-≠ (–>-is-inj (e ⁻¹))
-
-is-contr-equiv : {{_ : FUNEXT}} {X Y : U} → X ≃ Y → is-contr X ≃ is-contr Y
-is-contr-equiv e = equiv
-  (λ {(x , xp) → (–> e x) , (λ y → ap (–> e) (xp (<– e y)) ∙ <–-inv-r e y)})
-  ((λ {(y , yp) → (<– e y) , (λ x → ap (<– e) (yp (–> e x)) ∙ <–-inv-l e x)}))
-  (λ b → prop-has-all-paths is-contr-is-prop _ _)
-  (λ b → prop-has-all-paths is-contr-is-prop _ _)
 
 theorem-1-B : {{_ : FUNEXT}} → LEM → Σ ((X : U) → X → X) (λ f → endomap-natural f × ¬ ((x : Bool) → f Bool x == x))
 theorem-1-B lem = f , (f-natural , f-bool)
