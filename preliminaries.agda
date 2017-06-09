@@ -36,3 +36,38 @@ infix 20 _⇔_
 
 _⇔_ : ∀ {i j} (A : Type i) (B : Type j) → Type (lmax i j)
 A ⇔ B = (A → B) × (B → A)
+
+×≃ : ∀ {i} {A B C D : Type i} → A ≃ B → C ≃ D → A × C ≃ B × D
+×≃ {_} {A} {B} {C} {D} e f = equiv to from from-to to-from
+  where
+  to : A × C → B × D
+  to (a , c) = (–> e a) , (–> f c)
+  from : B × D → A × C
+  from (b , d) = (<– e b) , (<– f d)
+  to-from : (ac : A × C) → from (to ac) == ac
+  to-from (a , c) = pair×= (<–-inv-l e a) (<–-inv-l f c)
+  from-to : (bd : B × D) → to (from bd) == bd
+  from-to (b , d) = pair×= (<–-inv-r e b) (<–-inv-r f d)
+
+⊔≃ : ∀ {i} {A B C D : Type i} → A ≃ B → C ≃ D → A ⊔ C ≃ B ⊔ D
+⊔≃ {_} {A} {B} {C} {D} e f = equiv to from from-to to-from
+  where
+  to : A ⊔ C → B ⊔ D
+  to (inl a) = inl (–> e a)
+  to (inr c) = inr (–> f c)
+  from : B ⊔ D → A ⊔ C
+  from (inl b) = inl (<– e b)
+  from (inr d) = inr (<– f d)
+  to-from : (ac : A ⊔ C) → from (to ac) == ac
+  to-from (inl a) = ap inl (<–-inv-l e a)
+  to-from (inr c) = ap inr (<–-inv-l f c)
+  from-to : (bd : B ⊔ D) → to (from bd) == bd
+  from-to (inl b) = ap inl (<–-inv-r e b)
+  from-to (inr d) = ap inr (<–-inv-r f d)
+
+×-Unit : ∀ {i} {A : Type i} → Unit × A ≃ A
+×-Unit = Σ₁-Unit
+
+is-left : ∀ {i} {A B : Type i} → A ⊔ B → Bool
+is-left (inl _) = true
+is-left (inr _) = false

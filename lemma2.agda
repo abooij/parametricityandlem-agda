@@ -11,17 +11,14 @@ lemma-2 {X} x = to , from
   to : isolated x → Σ (Σ U (λ Y → X ≃ Y ⊔ Unit)) (λ {(_ , e) → –> e x == inr unit})
   to i = (Y , (equiv X-to X-from from-to to-from)) , equiv-compute
     where
-    d-aux : (x' : X) → (x == x') ⊔ (x ≠ x') → Bool
-    d-aux x' (inl _) = true -- x == x'
-    d-aux x' (inr _) = false -- x ≠ x'
     d : X → Bool
-    d x' = d-aux x' (i x')
+    d x' = is-left (i x')
     Y : U
     Y = Σ X (λ x' → d x' == false)
     X-to : X → Y ⊔ Unit
     X-to x' with inspect (i x')
     X-to x' | inl x₁ with≡ _ = inr unit -- x == x'
-    X-to x' | inr x₁ with≡ q = inl (x' , ap (d-aux x') q) -- x ≠ x'
+    X-to x' | inr x₁ with≡ q = inl (x' , ap is-left q) -- x ≠ x'
     X-from : Y ⊔ Unit → X
     X-from (inl (x' , p)) = x'
     X-from (inr unit) = x
@@ -31,7 +28,7 @@ lemma-2 {X} x = to , from
     to-from x' | inr x₁ with≡ _ = idp -- x ≠ x'
     from-to : (z : Y ⊔ Unit) → X-to (X-from z) == z
     from-to (inl (x' , p)) with inspect (i x')
-    from-to (inl (x' , p)) | inl x₁ with≡ x₂ with inr≠inl unit unit (! p ∙ ap (d-aux x') x₂)
+    from-to (inl (x' , p)) | inl x₁ with≡ x₂ with inr≠inl unit unit (! p ∙ ap is-left x₂)
     from-to (inl (x' , p)) | inl x₁ with≡ x₂ | ()
     from-to (inl (x' , p)) | inr x₁ with≡ x₂ = ap inl (pair= idp (prop-has-all-paths (Bool-level _ _) _ _))
     from-to (inr unit) with inspect (i x)
