@@ -29,9 +29,16 @@ inspect x = x with≡ idp
 is-contr-equiv : {{_ : FUNEXT}} {X Y : U} → X ≃ Y → is-contr X ≃ is-contr Y
 is-contr-equiv e = equiv
   (λ {(x , xp) → (–> e x) , (λ y → ap (–> e) (xp (<– e y)) ∙ <–-inv-r e y)})
-  ((λ {(y , yp) → (<– e y) , (λ x → ap (<– e) (yp (–> e x)) ∙ <–-inv-l e x)}))
+  (λ {(y , yp) → (<– e y) , (λ x → ap (<– e) (yp (–> e x)) ∙ <–-inv-l e x)})
   (λ b → prop-has-all-paths is-contr-is-prop _ _)
   (λ b → prop-has-all-paths is-contr-is-prop _ _)
+
+is-prop-equiv : {{_ : FUNEXT}} → ∀ {i} {X Y : Type i} → X ≃ Y → is-prop X → is-prop Y
+is-prop-equiv e X-prop = all-paths-is-prop (λ y y' →
+  y =⟨ ! (<–-inv-r e y) ⟩
+  –> e (<– e y) =⟨ prop-has-all-paths X-prop _ _ |in-ctx (–> e) ⟩
+  –> e (<– e y') =⟨ <–-inv-r e y' ⟩
+  y' =∎)
 
 isolated : {X : U} → (x : X) → U
 isolated {X} x = (y : X) → (x == y) ⊔ (x ≠ y)
@@ -119,8 +126,20 @@ is-right (inr _) = true
 ¬-is-prop0 : {{_ : FUNEXT0}} → {A : U} → is-prop (¬ A)
 ¬-is-prop0 {A} = all-paths-is-prop (λ x y → λ=0)
 
-inhab-¬-Empty : {{_ : FUNEXT0}} → ∀ {i} {A : Type i} → A → ¬ A ≃ Empty
+inhab-¬-Empty : {{_ : FUNEXT}} → ∀ {i} {A : Type i} → A → ¬ A ≃ Empty
 inhab-¬-Empty {A = A} a = equiv to from from-to to-from
+  where
+  to : ¬ A → Empty
+  to negA = negA a
+  from : Empty → ¬ A
+  from ()
+  to-from : ∀ negA → from (to negA) == negA
+  to-from negA = λ= (⊥-rec ∘ negA)
+  from-to : ∀ u → to (from u) == u
+  from-to ()
+
+inhab-¬-Empty0 : {{_ : FUNEXT0}} → ∀ {i} {A : Type i} → A → ¬ A ≃ Empty
+inhab-¬-Empty0 {A = A} a = equiv to from from-to to-from
   where
   to : ¬ A → Empty
   to negA = negA a
@@ -131,11 +150,47 @@ inhab-¬-Empty {A = A} a = equiv to from from-to to-from
   from-to : ∀ u → to (from u) == u
   from-to ()
 
-prop-equiv0 : ∀ {i} {A B : Type i} → is-prop A → is-prop B → (A → B) → (B → A) → A ≃ B
-prop-equiv0 A-is-prop B-is-prop f g =
+prop-equiv : ∀ {i} {A B : Type i} → is-prop A → is-prop B → (A → B) → (B → A) → A ≃ B
+prop-equiv A-is-prop B-is-prop f g =
   equiv f g
     (λ b → prop-has-all-paths B-is-prop _ _)
     (λ a → prop-has-all-paths A-is-prop _ _)
 
 contra : ∀ {i j} {A : Type i} {B : Type j} → (A → B) → ¬ B → ¬ A
 contra f negB a = negB (f a)
+
+[[]]-equiv : {{_ : PTRUNC}} → ∀ {i} {A B : Type i} → (A → B) → (B → A) → [[ A ]] ≃ [[ B ]]
+[[]]-equiv f g =
+  prop-equiv PTrunc-level PTrunc-level
+    (PTrunc-rec PTrunc-level (p[_] ∘ f))
+    (PTrunc-rec PTrunc-level (p[_] ∘ g))
+
+[[]]≃ : {{_ : PTRUNC}} → ∀ {i} {A B : Type i} → A ≃ B → [[ A ]] ≃ [[ B ]]
+[[]]≃ e = [[]]-equiv (–> e) (<– e)
+
+[[]]μ : {{_ : PTRUNC }} → ∀ {i} {A : Type i} → [[ [[ A ]] ]] ≃ [[ A ]]
+[[]]μ = equiv
+  (PTrunc-rec PTrunc-level (idf _))
+  p[_]
+  (λ b → prop-has-all-paths PTrunc-level _ _)
+  (λ c → prop-has-all-paths PTrunc-level _ _)
+
+inhab-prop-equiv-Unit : ∀ {i} {A : Type i} → A → is-prop A → A ≃ Unit
+inhab-prop-equiv-Unit a A-is-prop = contr-equiv-Unit (inhab-prop-is-contr a A-is-prop)
+
+component-is-prop : {{_ : FUNEXT}} {{_ : PTRUNC}} → ∀ {i} {A : Type i} → (a : A) → is-prop (a == a) → is-contr (Σ A λ a' → [[ a == a' ]])
+component-is-prop {A = A} a a-is-prop = inhab-prop-is-contr (a , p[ idp ]) prop
+  where
+  go : has-all-paths (Σ A λ a' → [[ a == a' ]])
+  go (a' , p) (a'' , q) = pair= (! a'-path ∙ a''-path) (prop-has-all-paths-↓ PTrunc-level)
+    where
+    a'-is-prop : is-prop (a == a')
+    a'-is-prop = PTrunc-rec is-prop-is-prop (λ r → is-prop-equiv (post∙-equiv r) a-is-prop) p
+    a''-is-prop : is-prop (a == a'')
+    a''-is-prop = PTrunc-rec is-prop-is-prop (λ r → is-prop-equiv (post∙-equiv r) a-is-prop) q
+    a'-path : a == a'
+    a'-path = PTrunc-rec a'-is-prop (idf _) p
+    a''-path : a == a''
+    a''-path = PTrunc-rec a''-is-prop (idf _) q
+  prop : is-prop (Σ A λ a' → [[ a == a' ]])
+  prop = all-paths-is-prop go

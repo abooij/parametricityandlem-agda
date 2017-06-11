@@ -60,7 +60,7 @@ theorem-6-A f f-nat X Y x x-isol y y-isol ineq A = claim-E
     (Unit ⊔ (¬ A × X')) × (Unit ⊔ (¬ (¬ A) × Y')) ≃⟨
       ×≃
         (⊔≃ (ide Unit) (×≃ (contr-equiv-Unit (inhab-prop-is-contr negA ¬-is-prop0) ) (ide _)))
-        (⊔≃ (ide Unit) (×≃ (inhab-¬-Empty negA) (ide _)))
+        (⊔≃ (ide Unit) (×≃ (inhab-¬-Empty0 negA) (ide _)))
       ⟩
     (Unit ⊔ (Unit × X')) × (Unit ⊔ (Empty × Y')) ≃⟨
       ×≃ (⊔≃ (ide Unit) ×-Unit) (⊔≃ (ide Unit) ×-Empty) ⟩
@@ -73,7 +73,7 @@ theorem-6-A f f-nat X Y x x-isol y y-isol ineq A = claim-E
   claim-C a =
     (Unit ⊔ (¬ A × X')) × (Unit ⊔ (¬ (¬ A) × Y')) ≃⟨
       ×≃
-        (⊔≃ (ide Unit) (×≃ (inhab-¬-Empty a) (ide X')))
+        (⊔≃ (ide Unit) (×≃ (inhab-¬-Empty0 a) (ide X')))
         (⊔≃ (ide Unit) (×≃ (contr-equiv-Unit (inhab-prop-is-contr (λ x₁ → x₁ a) ¬-is-prop0)) (ide Y')))
       ⟩
     (Unit ⊔ (Empty × X')) × (Unit ⊔ (Unit × Y')) ≃⟨
@@ -111,7 +111,7 @@ module onlyif {{_ : FUNEXT0}} (wem : WEM) where
       (Σ X λ x' → x ≠ x') ≃⟨
         Σ-emap e
           (λ y' →
-            prop-equiv0 ¬-is-prop0 ¬-is-prop0
+            prop-equiv ¬-is-prop0 ¬-is-prop0
               (contra (λ q → ! (<–-inv-l e x) ∙ (q |in-ctx <– e)))
               (contra (λ q → (q |in-ctx –> e) ∙ <–-inv-r e y'))
           )
