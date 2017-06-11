@@ -112,6 +112,10 @@ is-left : ∀ {i} {A B : Type i} → A ⊔ B → Bool
 is-left (inl _) = true
 is-left (inr _) = false
 
+is-right : ∀ {i} {A B : Type i} → A ⊔ B → Bool
+is-right (inl _) = false
+is-right (inr _) = true
+
 ¬-is-prop0 : {{_ : FUNEXT0}} → {A : U} → is-prop (¬ A)
 ¬-is-prop0 {A} = all-paths-is-prop (λ x y → λ=0)
 
@@ -126,3 +130,12 @@ inhab-¬-Empty {A = A} a = equiv to from from-to to-from
   to-from negA = λ=0
   from-to : ∀ u → to (from u) == u
   from-to ()
+
+prop-equiv0 : ∀ {i} {A B : Type i} → is-prop A → is-prop B → (A → B) → (B → A) → A ≃ B
+prop-equiv0 A-is-prop B-is-prop f g =
+  equiv f g
+    (λ b → prop-has-all-paths B-is-prop _ _)
+    (λ a → prop-has-all-paths A-is-prop _ _)
+
+contra : ∀ {i j} {A : Type i} {B : Type j} → (A → B) → ¬ B → ¬ A
+contra f negB a = negB (f a)

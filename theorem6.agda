@@ -6,7 +6,11 @@ open import lemma2
 
 module theorem6 where
 
-theorem-6-A : {{_ : FUNEXT0}} → (f : (X : U) → X → Bool) → dec-natural f → (X Y : U) → (x : X) → isolated x → (y : Y) → isolated y → f X x ≠ f Y y → WEM
+theorem-6-A : {{_ : FUNEXT0}} →
+  (f : (X : U) → X → Bool) →
+  dec-natural f →
+  (X Y : U) → (x : X) → isolated x → (y : Y) → isolated y →
+  f X x ≠ f Y y → WEM
 theorem-6-A f f-nat X Y x x-isol y y-isol ineq A = claim-E
   where
   wlog-X : Σ U λ X' → Σ X' λ x' → isolated x' × (f X' x' == true)
@@ -88,3 +92,62 @@ theorem-6-A f f-nat X Y x x-isol y y-isol ineq A = claim-E
   claim-E with inspect (f Z z)
   claim-E | true with≡ x₂ = inl (claim-D-contra x₂)
   claim-E | false with≡ x₂ = inr (claim-B-contra x₂)
+
+module onlyif {{_ : FUNEXT0}} (wem : WEM) where
+  f : (X : U) → X → Bool
+  f X x = is-right (wem (Σ X λ x' → x ≠ x'))
+
+  f-natural : dec-natural f
+  f-natural X Y e x = go
+    where
+    y : Y
+    y = –> e x
+    X-prop : U
+    X-prop = (Σ X λ x' → x ≠ x')
+    Y-prop : U
+    Y-prop = (Σ Y λ y' → y ≠ y')
+    e-lifted : (Σ X λ x' → x ≠ x') ≃ (Σ Y λ y' → y ≠ y')
+    e-lifted =
+      (Σ X λ x' → x ≠ x') ≃⟨
+        Σ-emap e
+          (λ y' →
+            prop-equiv0 ¬-is-prop0 ¬-is-prop0
+              (contra (λ q → ! (<–-inv-l e x) ∙ (q |in-ctx <– e)))
+              (contra (λ q → (q |in-ctx –> e) ∙ <–-inv-r e y'))
+          )
+        ⟩
+      (Σ Y λ y' → y ≠ y') ≃∎
+    go : f Y (–> e x) == f X x
+    go with wem X-prop | wem Y-prop
+    go | inl x₂ | inl x₃ = idp
+    go | inr x₂ | inr x₃ = idp
+    go | inl x₂ | inr x₃ = ⊥-rec (x₃ (λ yp → x₂ (<– e-lifted yp)))
+    go | inr x₂ | inl x₃ = ⊥-rec (x₂ (λ xp → x₃ (–> e-lifted xp)))
+
+  claim-A : f Unit unit == false
+  claim-A with wem (Σ Unit λ x' → unit ≠ x')
+  claim-A | inl _ = idp
+  claim-A | inr z = ⊥-rec (z (λ {(unit , ineq) → ineq idp}))
+
+  claim-B : f Bool true == true
+  claim-B with wem (Σ Bool λ b' → true ≠ b')
+  claim-B | inl z = ⊥-rec (z (false , Bool-true≠false))
+  claim-B | inr _ = idp
+
+  isolated-unit : isolated unit
+  isolated-unit unit = inl idp
+
+  isolated-true : isolated true
+  isolated-true true  = inl idp
+  isolated-true false = inr Bool-true≠false
+
+theorem-6-B : {{_ : FUNEXT0}} → WEM →
+  Σ ((X : U) → X → Bool)
+  λ f → dec-natural f ×
+  Σ U λ X → Σ U λ Y →
+  Σ X λ x → Σ Y λ y →
+  isolated x × isolated y ×
+  (f X x ≠ f Y y)
+theorem-6-B wem = f , (f-natural , (Unit , (Bool , (unit , (true , (isolated-unit , (isolated-true , (λ ineq → Bool-false≠true (! claim-A ∙ ineq ∙ claim-B)))))))))
+  where
+  open onlyif wem
