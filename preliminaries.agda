@@ -6,9 +6,13 @@ module preliminaries where
 
 U = Type lzero
 LEM = (P : U) → is-prop P → P ⊔ ¬ P
+WEM = (A : U) → ¬ A ⊔ ¬ (¬ A)
 
 endomap-natural : (f : (X : U) → X → X) → Type (lsucc lzero)
 endomap-natural f = (X Y : U) → (e : X ≃ Y) → (x : X)→  –> e (f X x) == f Y (–> e x)
+
+dec-natural : (f : (X : U) → X → Bool) → Type (lsucc lzero)
+dec-natural f = (X Y : U) → (e : X ≃ Y) → (x : X) → f Y (–> e x) == f X x
 
 data Singleton {i} {A : Set i} (x : A) : Set i where
   _with≡_ : (y : A) → x == y → Singleton x
@@ -68,6 +72,57 @@ A ⇔ B = (A → B) × (B → A)
 ×-Unit : ∀ {i} {A : Type i} → Unit × A ≃ A
 ×-Unit = Σ₁-Unit
 
+×-Unit-r : ∀ {i} {A : Type i} → A × Unit ≃ A
+×-Unit-r = ×-Unit ∘e ×-comm
+
+×-Empty : ∀ {i} {A : Type i} → Empty × A ≃ Empty
+×-Empty = Σ₁-Empty
+
+⊔-comm : ∀ {i j} {A : Type i} {B : Type j} → A ⊔ B ≃ B ⊔ A
+⊔-comm {A = A} {B = B} = equiv to from from-to to-from
+  where
+  to : A ⊔ B → B ⊔ A
+  to (inl a) = inr a
+  to (inr b) = inl b
+  from : B ⊔ A → A ⊔ B
+  from (inl b) = inr b
+  from (inr a) = inl a
+  to-from : ∀ ab → from (to ab) == ab
+  to-from (inl a) = idp
+  to-from (inr b) = idp
+  from-to : ∀ ba → to (from ba) == ba
+  from-to (inl b) = idp
+  from-to (inr a) = idp
+
+⊔-Empty : ∀ {i} {A : Type i} → A ⊔ Empty ≃ A
+⊔-Empty {A = A} = equiv to from from-to to-from
+  where
+  to : A ⊔ Empty → A
+  to (inl x) = x
+  to (inr ())
+  from : A → A ⊔ Empty
+  from a = inl a
+  to-from : ∀ au → from (to au) == au
+  to-from (inl x) = idp
+  to-from (inr ())
+  from-to : ∀ a → to (from a) == a
+  from-to a = idp
+
 is-left : ∀ {i} {A B : Type i} → A ⊔ B → Bool
 is-left (inl _) = true
 is-left (inr _) = false
+
+¬-is-prop0 : {{_ : FUNEXT0}} → {A : U} → is-prop (¬ A)
+¬-is-prop0 {A} = all-paths-is-prop (λ x y → λ=0)
+
+inhab-¬-Empty : {{_ : FUNEXT0}} → ∀ {i} {A : Type i} → A → ¬ A ≃ Empty
+inhab-¬-Empty {A = A} a = equiv to from from-to to-from
+  where
+  to : ¬ A → Empty
+  to negA = negA a
+  from : Empty → ¬ A
+  from ()
+  to-from : ∀ negA → from (to negA) == negA
+  to-from negA = λ=0
+  from-to : ∀ u → to (from u) == u
+  from-to ()
