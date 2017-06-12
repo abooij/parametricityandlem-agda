@@ -17,6 +17,9 @@ dec-natural f = (X Y : U) → (e : X ≃ Y) → (x : X) → f Y (–> e x) == f 
 equiv-invariant : (f : U → U) → Type (lsucc lzero)
 equiv-invariant f = {X Y : U} → X ≃ Y → f X ≃ f Y
 
+pointed-invariant : (f : (X : U) → X → U) → Type (lsucc lzero)
+pointed-invariant f = {X Y : U} → (e : X ≃ Y) → (x : X) → f X x ≃ f Y (–> e x)
+
 data Singleton {i} {A : Set i} (x : A) : Set i where
   _with≡_ : (y : A) → x == y → Singleton x
 
@@ -230,3 +233,47 @@ prop-dec-is-prop0 P P-is-prop = all-paths-is-prop go
   go (inr x₁) (inl x₂) with x₁ x₂
   go (inr x₁) (inl x₂) | ()
   go (inr x₁) (inr x₂) = ¬P-paths _ _ |in-ctx inr
+
+singleton-equiv-Unit : ∀ {i} → {A : Type i} → (a : A) → (Σ A λ a' → a == a') ≃ Unit
+singleton-equiv-Unit a = contr-equiv-Unit (pathfrom-is-contr a)
+
+join-Empty-idem : {{_ : PUSHOUT}} → ∀ {i} → {A : Type i} → A * Empty ≃ A
+join-Empty-idem {A = A} = equiv to from from-to to-from
+  where
+  to : A * Empty → A
+  to = Join-rec (idf _) ⊥-rec (λ a → ⊥-elim)
+  from : A → A * Empty
+  from = jleft
+  to-from : ∀ ae → from (to ae) == ae
+  to-from = Join-elim (λ a → idp) ⊥-elim (λ a → ⊥-elim)
+  from-to : ∀ a → to (from a) == a
+  from-to a = idp
+
+join-Unit-idem : {{_ : PUSHOUT}} → ∀ {i} → {A : Type i} → A * Unit ≃ Unit
+join-Unit-idem {A = A} = equiv to from from-to to-from
+  where
+  to : A * Unit → Unit
+  to _ = unit
+  from : Unit → A * Unit
+  from _ = jright unit
+  lem : {x y : A * Unit} → (p : x == y) → (u : from (to x) == x) →
+    transport (λ z → from (to z) == z) p u == ! (ap (from ∘ to) p) ∙ u ∙ p
+  lem idp u = ! (∙-unit-r u)
+  lem' : ∀ a → ! (ap (from ∘ to) (jglue a unit)) ∙ ! (jglue a unit) ∙ (jglue a unit) == idp
+  lem' a =
+    ! (ap (from ∘ to) (jglue a unit)) ∙ (! (jglue a unit) ∙ jglue a unit)
+      =⟨ ap ! (ap-cst (jright unit) (jglue a unit)) ∙2 !-inv-l (jglue a unit) ⟩
+    idp ∙ idp
+      =⟨ idp ⟩
+    idp
+      =∎
+  to-from : ∀ au → from (to au) == au
+  to-from = Pushout-elim
+    (λ a → ! (jglue a unit))
+    (λ {unit → idp})
+    (λ {(a , unit) → from-transp
+      (λ z → from (to z) == z)
+      (jglue a unit)
+      (lem (jglue a unit) (! (jglue a unit)) ∙ lem' a)})
+  from-to : ∀ u → to (from u) == u
+  from-to unit = idp
