@@ -14,6 +14,9 @@ endomap-natural f = (X Y : U) → (e : X ≃ Y) → (x : X)→  –> e (f X x) =
 dec-natural : (f : (X : U) → X → Bool) → Type (lsucc lzero)
 dec-natural f = (X Y : U) → (e : X ≃ Y) → (x : X) → f Y (–> e x) == f X x
 
+equiv-invariant : (f : U → U) → Type (lsucc lzero)
+equiv-invariant f = {X Y : U} → X ≃ Y → f X ≃ f Y
+
 data Singleton {i} {A : Set i} (x : A) : Set i where
   _with≡_ : (y : A) → x == y → Singleton x
 
@@ -115,6 +118,9 @@ A ⇔ B = (A → B) × (B → A)
   from-to : ∀ a → to (from a) == a
   from-to a = idp
 
+⊔-Empty-l : ∀ {i} {A : Type i} → Empty ⊔ A ≃ A
+⊔-Empty-l = ⊔-Empty ∘e ⊔-comm
+
 is-left : ∀ {i} {A B : Type i} → A ⊔ B → Bool
 is-left (inl _) = true
 is-left (inr _) = false
@@ -194,3 +200,33 @@ component-is-prop {A = A} a a-is-prop = inhab-prop-is-contr (a , p[ idp ]) prop
     a''-path = PTrunc-rec a''-is-prop (idf _) q
   prop : is-prop (Σ A λ a' → [[ a == a' ]])
   prop = all-paths-is-prop go
+
+prop-dec-is-prop : {{_ : FUNEXT}} (P : U) → is-prop P → is-prop (P ⊔ ¬ P)
+prop-dec-is-prop P P-is-prop = all-paths-is-prop go
+  where
+  P-paths : has-all-paths P
+  P-paths = prop-has-all-paths P-is-prop
+  ¬P-paths : has-all-paths (¬ P)
+  ¬P-paths = prop-has-all-paths ¬-is-prop
+  go : has-all-paths (P ⊔ ¬ P)
+  go (inl x₁) (inl x₂) = P-paths _ _ |in-ctx inl
+  go (inl x₁) (inr x₂) with x₂ x₁
+  go (inl x₁) (inr x₂) | ()
+  go (inr x₁) (inl x₂) with x₁ x₂
+  go (inr x₁) (inl x₂) | ()
+  go (inr x₁) (inr x₂) = ¬P-paths _ _ |in-ctx inr
+
+prop-dec-is-prop0 : {{_ : FUNEXT0}} (P : U) → is-prop P → is-prop (P ⊔ ¬ P)
+prop-dec-is-prop0 P P-is-prop = all-paths-is-prop go
+  where
+  P-paths : has-all-paths P
+  P-paths = prop-has-all-paths P-is-prop
+  ¬P-paths : has-all-paths (¬ P)
+  ¬P-paths = prop-has-all-paths ¬-is-prop0
+  go : has-all-paths (P ⊔ ¬ P)
+  go (inl x₁) (inl x₂) = P-paths _ _ |in-ctx inl
+  go (inl x₁) (inr x₂) with x₂ x₁
+  go (inl x₁) (inr x₂) | ()
+  go (inr x₁) (inl x₂) with x₁ x₂
+  go (inr x₁) (inl x₂) | ()
+  go (inr x₁) (inr x₂) = ¬P-paths _ _ |in-ctx inr

@@ -6,21 +6,6 @@ open import lemma2
 
 module theorem4 where
 
-prop-dec-is-prop : {{_ : FUNEXT}} (P : U) → is-prop P → is-prop (P ⊔ ¬ P)
-prop-dec-is-prop P P-is-prop = all-paths-is-prop go
-  where
-  P-paths : has-all-paths P
-  P-paths = prop-has-all-paths P-is-prop
-  ¬P-paths : has-all-paths (¬ P)
-  ¬P-paths = prop-has-all-paths ¬-is-prop
-  go : has-all-paths (P ⊔ ¬ P)
-  go (inl x₁) (inl x₂) = P-paths _ _ |in-ctx inl
-  go (inl x₁) (inr x₂) with x₂ x₁
-  go (inl x₁) (inr x₂) | ()
-  go (inr x₁) (inl x₂) with x₁ x₂
-  go (inr x₁) (inl x₂) | ()
-  go (inr x₁) (inr x₂) = ¬P-paths _ _ |in-ctx inr
-
 complemented : {{_ : PTRUNC}} (P : U) → Type (lsucc lzero)
 complemented P = Σ U λ Q → [[ Q ⊔ P ]] × ¬ [[ Q × P ]]
 
