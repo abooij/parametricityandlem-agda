@@ -47,17 +47,17 @@ theorem-7-A f f-nat X Y x x-prop y y-prop ineq A = claim-E
   f-y^ : f Y^ y^ == false
   f-y^ = snd (snd (snd wlog-Y))
   Z : U
-  Z = (Σ X^ λ x' → [[ [[ x^ == x' ]] ⊔ ¬ A ]]) × (Σ Y^ λ y' → [[ [[ y^ == y' ]] ⊔ ¬ (¬ A) ]])
+  Z = (Σ X^ λ x' → [[ (x^ == x') ⊔ ¬ A ]]) × (Σ Y^ λ y' → [[ (y^ == y') ⊔ ¬ (¬ A) ]])
   z : Z
-  z = (x^ , p[ inl p[ idp ] ]) , (y^ , p[ inl p[ idp ] ])
+  z = (x^ , p[ inl idp ]) , (y^ , p[ inl idp ])
   claim-A : ¬ A → Z ≃ X^
   claim-A negA =
-    (Σ X^ λ x' → [[ [[ x^ == x' ]] ⊔ ¬ A ]]) × (Σ Y^ λ y' → [[ [[ y^ == y' ]] ⊔ ¬ (¬ A) ]])
+    (Σ X^ λ x' → [[ (x^ == x') ⊔ ¬ A ]]) × (Σ Y^ λ y' → [[ (y^ == y') ⊔ ¬ (¬ A) ]])
       ≃⟨ ×≃
         (Σ-emap-r (λ x' → [[]]≃ (⊔≃ (ide _) (inhab-prop-equiv-Unit negA ¬-is-prop)) ))
         (Σ-emap-r (λ y' → [[]]≃ (⊔≃ (ide _) (inhab-¬-Empty negA))))
        ⟩
-    (Σ X^ λ x' → [[ [[ x^ == x' ]] ⊔ Unit ]]) × (Σ Y^ λ y' → [[ [[ y^ == y' ]] ⊔ Empty ]])
+    (Σ X^ λ x' → [[ (x^ == x') ⊔ Unit ]]) × (Σ Y^ λ y' → [[ (y^ == y') ⊔ Empty ]])
       ≃⟨ ×≃
         (Σ-emap-r (λ x' →
           prop-equiv PTrunc-level (raise-level -2 Unit-level)
@@ -67,14 +67,9 @@ theorem-7-A f f-nat X Y x x-prop y y-prop ineq A = claim-E
         )
         (Σ-emap-r (λ y' → [[]]≃ ⊔-Empty))
        ⟩
-    (Σ X^ λ x' → Unit) × (Σ Y^ λ y' → [[ [[ y^ == y' ]] ]])
+    (Σ X^ λ x' → Unit) × (Σ Y^ λ y' → [[ y^ == y' ]])
       ≃⟨ ×≃
         Σ₂-Unit
-        (Σ-emap-r (λ y' → [[]]μ))
-       ⟩
-    X^ × (Σ Y^ λ y' → [[ y^ == y' ]])
-      ≃⟨ ×≃
-        (ide X^)
         (contr-equiv-Unit (component-is-prop y^ y^-prop))
        ⟩
     X^ × Unit
@@ -83,12 +78,12 @@ theorem-7-A f f-nat X Y x x-prop y y-prop ineq A = claim-E
       ≃∎
   claim-C : A → Z ≃ Y^
   claim-C a =
-    (Σ X^ λ x' → [[ [[ x^ == x' ]] ⊔ ¬ A ]]) × (Σ Y^ λ y' → [[ [[ y^ == y' ]] ⊔ ¬ (¬ A) ]])
+    (Σ X^ λ x' → [[ (x^ == x') ⊔ ¬ A ]]) × (Σ Y^ λ y' → [[ (y^ == y') ⊔ ¬ (¬ A) ]])
       ≃⟨ ×≃
         (Σ-emap-r (λ x' → [[]]≃ (⊔≃ (ide _) (inhab-¬-Empty a))))
         (Σ-emap-r (λ y' → [[]]≃ (⊔≃ (ide _) (inhab-prop-equiv-Unit (λ x₁ → x₁ a) ¬-is-prop))))
        ⟩
-    (Σ X^ λ x' → [[ [[ x^ == x' ]] ⊔ Empty ]]) × (Σ Y^ λ y' → [[ [[ y^ == y' ]] ⊔ Unit ]])
+    (Σ X^ λ x' → [[ (x^ == x') ⊔ Empty ]]) × (Σ Y^ λ y' → [[ (y^ == y') ⊔ Unit ]])
       ≃⟨ ×≃
         (Σ-emap-r (λ x' → [[]]≃ ⊔-Empty))
         (Σ-emap-r (λ y' →
@@ -98,15 +93,10 @@ theorem-7-A f f-nat X Y x x-prop y y-prop ineq A = claim-E
           )
         )
        ⟩
-    (Σ X^ λ x' → [[ [[ x^ == x' ]] ]]) × (Σ Y^ λ y' → Unit)
-      ≃⟨ ×≃
-        (Σ-emap-r (λ x' → [[]]μ))
-        Σ₂-Unit
-       ⟩
-    (Σ X^ λ x' → [[ x^ == x' ]]) × Y^
+    (Σ X^ λ x' → [[ x^ == x' ]]) × (Σ Y^ λ y' → Unit)
       ≃⟨ ×≃
         (contr-equiv-Unit (component-is-prop x^ x^-prop))
-        (ide Y^)
+        Σ₂-Unit
        ⟩
     Unit × Y^
       ≃⟨ ×-Unit ⟩
