@@ -16,13 +16,13 @@ lemma-13 f f-inj p = lemma-11-B go
     where
     to : P → ¬ (f P)
     to =
-         prop-Empty-to
-       ∘ (λ q → q ∙ p)
-       ∘ ap f
-       ∘ prop-Unit-from P-is-prop
+         prop-Empty-to            -- propext
+       ∘ (λ q → q ∙ p)            -- assumption f Unit == Empty
+       ∘ ap f                     --
+       ∘ prop-Unit-from P-is-prop -- propext
     from : ¬ (f P) → P
     from =
-         prop-Unit-to
-       ∘ f-inj P Unit
-       ∘ (λ q → q ∙ (! p))
-       ∘ prop-Empty-from
+         prop-Unit-to             -- propext
+       ∘ f-inj P Unit             -- f left-cancellable
+       ∘ (λ q → q ∙ (! p))        -- assumption f Unit == Empty
+       ∘ prop-Empty-from          -- propext
