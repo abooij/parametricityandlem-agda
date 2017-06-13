@@ -7,6 +7,7 @@ module preliminaries where
 U = Type lzero
 LEM = (P : U) → is-prop P → P ⊔ ¬ P
 WEM = (A : U) → ¬ A ⊔ ¬ (¬ A)
+DNE = (P : U) → is-prop P → ¬ (¬ P) → P
 
 endomap-natural : (f : (X : U) → X → X) → Type (lsucc lzero)
 endomap-natural f = (X Y : U) → (e : X ≃ Y) → (x : X)→  –> e (f X x) == f Y (–> e x)
@@ -277,3 +278,24 @@ join-Unit-idem {A = A} = equiv to from from-to to-from
       (lem (jglue a unit) (! (jglue a unit)) ∙ lem' a)})
   from-to : ∀ u → to (from u) == u
   from-to unit = idp
+
+¬¬η : ∀ {i} {X : Type i} → X → ¬ (¬ X)
+¬¬η x negX = negX x
+
+¬-contra : ∀ {i j} {X : Type i} {Y : Type j} → (X → Y) → ¬ Y → ¬ X
+¬-contra f negY x = negY (f x)
+
+prop-Empty-to : {X : U} → X == Empty → ¬ X
+prop-Empty-to = coe
+
+prop-Empty-from : {{_ : PROPEXT}} {X : U} → ¬ X → X == Empty
+prop-Empty-from {X} nx = ua-prop X-is-prop Empty-level nx ⊥-rec
+  where
+  X-is-prop : is-prop X
+  X-is-prop = all-paths-is-prop (λ x _ → ⊥-rec (nx x))
+
+prop-Unit-to : {X : U} → X == Unit → X
+prop-Unit-to eq = coe (! eq) unit
+
+prop-Unit-from : {{_ : PROPEXT}} {X : U} → is-prop X → X → X == Unit
+prop-Unit-from X-is-prop x = ua-prop X-is-prop (raise-level _ Unit-level) (cst unit) (cst x)

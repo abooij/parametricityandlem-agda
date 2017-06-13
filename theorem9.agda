@@ -5,8 +5,6 @@ open import preliminaries
 
 module theorem9 where
 
--- TODO add pushout condition
-
 theorem-9 : {{_ : PUSHOUT}} {{_ : PTRUNC}} {{_ : FUNEXT0}} →
   (P Q : (X : U) → X → U) →
   pointed-invariant P → pointed-invariant Q →
