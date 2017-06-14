@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module corollary17 where
+
 open import HoTT
 open import preliminaries
 open import theorem16
-
-module corollary17 where
 
 corollary-17 : {{_ : UA}} {{_ : PROPEXT}} {{_ : PTRUNC}} {{_ : FUNEXT0}} {{_ : FUNEXT}} →
   (g : U ≃ U) →

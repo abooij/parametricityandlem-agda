@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem12 where
+
 open import HoTT
 open import preliminaries
 open import lemma11
-
-module theorem12 where
 
 theorem-12 : {{_ : PROPEXT}} → (f : U → U) → is-inj f → f Unit == Empty → DNE
 theorem-12 f f-inj p = lemma-11-B go

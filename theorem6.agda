@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem6 where
+
 open import HoTT
 open import preliminaries
 open import lemma2
-
-module theorem6 where
 
 theorem-6-A : {{_ : FUNEXT0}} →
   (f : (X : U) → X → Bool) →

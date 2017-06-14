@@ -1,12 +1,12 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module lemma15 where
+
 open import HoTT
 open import preliminaries
 open import lemma10
 open import lemma11
 open import lemma14
-
-module lemma15 where
 
 lemma-15 : {{_ : UA}} {{_ : PROPEXT}} {{_ : PTRUNC}} {{_ : FUNEXT0}} {{_ : FUNEXT}} → (f : U → U) → is-inj f → (A : U) → [[ A ]] → f A == Empty → LEM
 lemma-15 f f-inj A pa eq = lemma-10-B (lemma-11-B go)

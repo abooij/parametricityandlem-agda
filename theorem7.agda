@@ -1,11 +1,11 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem7 where
+
 open import HoTT
 open import preliminaries
 open import lemma2
 open import theorem6
-
-module theorem7 where
 
 theorem-7-A : {{_ : PTRUNC}} {{_ : FUNEXT}} →
   (f : (X : U) → X → Bool) →

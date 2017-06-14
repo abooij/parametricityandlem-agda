@@ -1,9 +1,9 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module lemma11 where
+
 open import HoTT
 open import preliminaries
-
-module lemma11 where
 
 lemma-11-A : DNE → (P : U) → is-prop P → Σ U λ X → P ⇔ ¬ X
 lemma-11-A dne P P-is-prop =

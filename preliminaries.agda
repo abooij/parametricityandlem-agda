@@ -1,8 +1,8 @@
 {-# OPTIONS --without-K --rewriting #-}
 
-open import HoTT
-
 module preliminaries where
+
+open import HoTT
 
 U = Type lzero
 LEM = (P : U) → is-prop P → P ⊔ ¬ P

@@ -1,9 +1,9 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem8 where
+
 open import HoTT
 open import preliminaries
-
-module theorem8 where
 
 theorem-8 : {{_ : PTRUNC}} {{_ : FUNEXT0}} →
   (P Q : U → U) → equiv-invariant P → equiv-invariant Q →

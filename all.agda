@@ -1,5 +1,7 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module all where
+
 open import HoTT
 
 open import theorem1
@@ -19,5 +21,3 @@ open import lemma14
 open import lemma15
 open import theorem16
 open import corollary17
-
-module all where

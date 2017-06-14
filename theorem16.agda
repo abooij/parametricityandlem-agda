@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem16 where
+
 open import HoTT
 open import preliminaries
 open import lemma15
-
-module theorem16 where
 
 theorem-16 : {{_ : UA}} {{_ : PROPEXT}} {{_ : PTRUNC}} {{_ : FUNEXT0}} {{_ : FUNEXT}} →
   (e : U ≃ U) →

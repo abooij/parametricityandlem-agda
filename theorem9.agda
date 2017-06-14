@@ -1,9 +1,9 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem9 where
+
 open import HoTT
 open import preliminaries
-
-module theorem9 where
 
 theorem-9 : {{_ : PUSHOUT}} {{_ : PTRUNC}} {{_ : FUNEXT0}} →
   (P Q : (X : U) → X → U) →

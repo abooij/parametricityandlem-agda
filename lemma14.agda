@@ -1,9 +1,9 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module lemma14 where
+
 open import HoTT
 open import preliminaries
-
-module lemma14 where
 
 lemma-14 : {{_ : UA}} {{_ : FUNEXT}} {{_ : PTRUNC}} (A : U) → [[ A ]] → (P : U) → is-prop P → P ⇔ (P × A == A)
 lemma-14 A pa P P-is-prop = to , from

@@ -1,9 +1,9 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module lemma10 where
+
 open import HoTT
 open import preliminaries
-
-module lemma10 where
 
 lemma-10-A : LEM → DNE
 lemma-10-A lem P P-is-prop negnegP with lem P P-is-prop

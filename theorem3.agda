@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem3 where
+
 open import HoTT
 open import preliminaries
 open import lemma2
-
-module theorem3 where
 
 theorem-3-A : (f : (X : U) → X → X) → endomap-natural f → (X : U) → (x : X) → isolated x → f X x ≠ x → LEM
 theorem-3-A f nat X x i ineq P P-is-prop = go (inspect (f ((P × Y) ⊔ Unit) (inr unit)))

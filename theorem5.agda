@@ -1,9 +1,9 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem5 where
+
 open import HoTT
 open import preliminaries
-
-module theorem5 where
 
 theorem-6-A : {{_ : FUNEXT0}} →
   (f : (X : U) → Bool) →

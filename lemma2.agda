@@ -1,9 +1,9 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module lemma2 where
+
 open import HoTT
 open import preliminaries
-
-module lemma2 where
 
 lemma-2 : {X : U} (x : X) → isolated x ⇔ Σ (Σ U (λ Y → X ≃ Y ⊔ Unit)) (λ {(_ , e) → –> e x == inr unit})
 lemma-2 {X} x = to , from

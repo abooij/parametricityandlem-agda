@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem4 where
+
 open import HoTT
 open import preliminaries
 open import lemma2
-
-module theorem4 where
 
 complemented : {{_ : PTRUNC}} (P : U) → Type (lsucc lzero)
 complemented P = Σ U λ Q → [[ Q ⊔ P ]] × ¬ [[ Q × P ]]

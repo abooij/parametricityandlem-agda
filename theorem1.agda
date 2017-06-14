@@ -1,9 +1,9 @@
 {-# OPTIONS --without-K --rewriting #-}
 
+module theorem1 where
+
 open import HoTT
 open import preliminaries
-
-module theorem1 where
 
 theorem-1-A : (f : (X : U) → X → X) → endomap-natural f → ¬ ((x : Bool) → f Bool x == x) → LEM
 theorem-1-A f k q P u with inspect (f (P ⊔ Unit) (inr unit))
