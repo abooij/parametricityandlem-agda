@@ -28,18 +28,15 @@ lemma-2 {X} x = to , from
     to-from x' | inr x₁ with≡ _ = idp -- x ≠ x'
     from-to : (z : Y ⊔ Unit) → X-to (X-from z) == z
     from-to (inl (x' , p)) with inspect (i x')
-    from-to (inl (x' , p)) | inl x₁ with≡ x₂ with inr≠inl unit unit (! p ∙ ap is-left x₂)
-    from-to (inl (x' , p)) | inl x₁ with≡ x₂ | ()
+    from-to (inl (x' , p)) | inl x₁ with≡ x₂ = ⊥-rec (inr≠inl unit unit (! p ∙ ap is-left x₂))
     from-to (inl (x' , p)) | inr x₁ with≡ x₂ = ap inl (pair= idp (prop-has-all-paths (Bool-level _ _) _ _))
     from-to (inr unit) with inspect (i x)
     from-to (inr unit) | inl x₁ with≡ x₂ = idp
-    from-to (inr unit) | inr x₁ with≡ x₂ with x₁ idp
-    from-to (inr unit) | inr x₁ with≡ x₂ | ()
+    from-to (inr unit) | inr x₁ with≡ x₂ = ⊥-rec (x₁ idp)
     equiv-compute : X-to x == inr unit
     equiv-compute with inspect (i x)
     equiv-compute | inl x₁ with≡ x₂ = idp
-    equiv-compute | inr x₁ with≡ x₂ with x₁ idp
-    equiv-compute | inr x₁ with≡ x₂ | ()
+    equiv-compute | inr x₁ with≡ x₂ = ⊥-rec (x₁ idp)
   from : Σ (Σ U (λ Y → X ≃ Y ⊔ Unit)) (λ {(_ , e) → –> e x == inr unit}) → isolated x
   from ((Y , e) , q) x' with inspect (–> e x')
   from ((Y , e) , q) x' | inl y' with≡ p = inr (λ r → inr≠inl unit y' (! q ∙ ap (–> e) r ∙ p))

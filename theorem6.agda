@@ -17,15 +17,13 @@ theorem-6-A f f-nat X Y x x-isol y y-isol ineq A = claim-E
   wlog-X with inspect (f X x)
   wlog-X | true  with≡ p = X , (x , (x-isol , p))
   wlog-X | false with≡ p with inspect (f Y y)
-  wlog-X | false with≡ p | false with≡ q with ineq (p ∙ ! q)
-  wlog-X | false with≡ p | false with≡ q | ()
+  wlog-X | false with≡ p | false with≡ q = ⊥-rec (ineq (p ∙ ! q))
   wlog-X | false with≡ p | true  with≡ q = Y , (y , (y-isol , q))
   wlog-Y : Σ U λ Y' → Σ Y' λ y' → isolated y' × (f Y' y' == false)
   wlog-Y with inspect (f Y y)
   wlog-Y | false with≡ p = Y , (y , (y-isol , p))
   wlog-Y | true  with≡ p with inspect (f X x)
-  wlog-Y | true  with≡ p | true  with≡ q with ineq (q ∙ ! p)
-  wlog-Y | true  with≡ p | true  with≡ q | ()
+  wlog-Y | true  with≡ p | true  with≡ q = ⊥-rec (ineq (q ∙ ! p))
   wlog-Y | true  with≡ p | false with≡ q = X , (x , (x-isol , q))
   X^ : U
   X^ = fst wlog-X

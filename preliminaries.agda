@@ -12,6 +12,9 @@ DNE = (P : U) → is-prop P → ¬ (¬ P) → P
 endomap-natural : (f : (X : U) → X → X) → Type (lsucc lzero)
 endomap-natural f = (X Y : U) → (e : X ≃ Y) → (x : X)→  –> e (f X x) == f Y (–> e x)
 
+universe-natural : (f : (X : U) → Bool) → Type (lsucc lzero)
+universe-natural f = (X Y : U) → (e : X ≃ Y) → f X == f Y
+
 dec-natural : (f : (X : U) → X → Bool) → Type (lsucc lzero)
 dec-natural f = (X Y : U) → (e : X ≃ Y) → (x : X) → f Y (–> e x) == f X x
 
@@ -214,10 +217,8 @@ prop-dec-is-prop P P-is-prop = all-paths-is-prop go
   ¬P-paths = prop-has-all-paths ¬-is-prop
   go : has-all-paths (P ⊔ ¬ P)
   go (inl x₁) (inl x₂) = P-paths _ _ |in-ctx inl
-  go (inl x₁) (inr x₂) with x₂ x₁
-  go (inl x₁) (inr x₂) | ()
-  go (inr x₁) (inl x₂) with x₁ x₂
-  go (inr x₁) (inl x₂) | ()
+  go (inl x₁) (inr x₂) = ⊥-rec (x₂ x₁)
+  go (inr x₁) (inl x₂) = ⊥-rec (x₁ x₂)
   go (inr x₁) (inr x₂) = ¬P-paths _ _ |in-ctx inr
 
 prop-dec-is-prop0 : {{_ : FUNEXT0}} (P : U) → is-prop P → is-prop (P ⊔ ¬ P)
@@ -229,10 +230,8 @@ prop-dec-is-prop0 P P-is-prop = all-paths-is-prop go
   ¬P-paths = prop-has-all-paths ¬-is-prop0
   go : has-all-paths (P ⊔ ¬ P)
   go (inl x₁) (inl x₂) = P-paths _ _ |in-ctx inl
-  go (inl x₁) (inr x₂) with x₂ x₁
-  go (inl x₁) (inr x₂) | ()
-  go (inr x₁) (inl x₂) with x₁ x₂
-  go (inr x₁) (inl x₂) | ()
+  go (inl x₁) (inr x₂) = ⊥-rec (x₂ x₁)
+  go (inr x₁) (inl x₂) = ⊥-rec (x₁ x₂)
   go (inr x₁) (inr x₂) = ¬P-paths _ _ |in-ctx inr
 
 singleton-equiv-Unit : ∀ {i} → {A : Type i} → (a : A) → (Σ A λ a' → a == a') ≃ Unit

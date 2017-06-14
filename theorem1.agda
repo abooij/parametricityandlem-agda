@@ -21,8 +21,7 @@ theorem-1-A f k q P u | inr unit with≡ z = inr (claim-C z)
   claim-B | true with≡ r | true with≡ s = inr s
   claim-B | false with≡ r | false with≡ s = inl r
   claim-B | false with≡ r | true with≡ s = inl r
-  claim-B | true with≡ r | false with≡ s with claim-A (r , s)
-  claim-B | true with≡ r | false with≡ s | ()
+  claim-B | true with≡ r | false with≡ s = ⊥-rec (claim-A (r , s))
   claim-C-l : (f Bool true == false) → f (P ⊔ Unit) (inr unit) == inr unit → ¬ P
   claim-C-l j z p = inl≠inr p unit (
     inl p =⟨ idp ⟩
@@ -94,8 +93,7 @@ theorem-1-B lem = f , (f-natural , f-bool)
     lem-Y : (lem (is-contr (Σ Y (λ y' → y' ≠ y))) is-contr-is-prop) == inl Y-contr
     lem-Y with inspect (lem (is-contr (Σ Y (λ y' → y' ≠ y))) is-contr-is-prop)
     lem-Y | inl x₂ with≡ x₃ = x₃ ∙ ap inl (prop-has-all-paths is-contr-is-prop x₂ Y-contr)
-    lem-Y | inr x₂ with≡ x₃ with x₂ Y-contr
-    lem-Y | inr x₂ with≡ x₃ | ()
+    lem-Y | inr x₂ with≡ x₃ = ⊥-rec (x₂ Y-contr)
   f-natural X Y e x | inr z  with≡ p =
     –> e (f X x) =⟨ p |in-ctx (λ z → –> e (f-aux X x z)) ⟩
     –> e x =⟨ ! lem-Y |in-ctx f-aux Y (–> e x) ⟩
@@ -123,8 +121,7 @@ theorem-1-B lem = f , (f-natural , f-bool)
     not-Y-contr q = z (<– (is-contr-equiv e-lifted) q)
     lem-Y : (lem (is-contr (Σ Y (λ y' → y' ≠ y))) is-contr-is-prop) == inr not-Y-contr
     lem-Y with inspect (lem (is-contr (Σ Y (λ y' → y' ≠ y))) is-contr-is-prop)
-    lem-Y | inl x₂ with≡ x₃ with not-Y-contr x₂
-    lem-Y | inl x₂ with≡ x₃ | ()
+    lem-Y | inl x₂ with≡ x₃ = ⊥-rec (not-Y-contr x₂)
     lem-Y | inr x₂ with≡ x₃ = x₃ ∙ ap inr (prop-has-all-paths ¬-is-prop _ _)
   f-bool : ¬ ((x : Bool) → f Bool x == x)
   f-bool u = Bool-true≠false (! (u true) ∙ (lem-Bool |in-ctx f-aux Bool true))
@@ -135,11 +132,9 @@ theorem-1-B lem = f , (f-natural , f-bool)
     Bool-contr = (false , Bool-false≠true) , go
       where
       go : (y : Σ Bool (λ b' → b' ≠ b)) → false , Bool-false≠true == y
-      go (true  , p) with p idp
-      go (true  , p) | ()
+      go (true  , p) = ⊥-rec (p idp)
       go (false , p) = pair= idp (prop-has-all-paths ¬-is-prop Bool-false≠true p)
     lem-Bool : (lem (is-contr (Σ Bool (λ b' → b' ≠ b))) is-contr-is-prop) == inl Bool-contr
     lem-Bool with inspect (lem (is-contr (Σ Bool (λ b' → b' ≠ b))) is-contr-is-prop)
     lem-Bool | inl x₁ with≡ x₂ = x₂ ∙ ap inl (prop-has-all-paths is-contr-is-prop _ _)
-    lem-Bool | inr x₁ with≡ x₂ with x₁ Bool-contr
-    lem-Bool | inr x₁ with≡ x₂ | ()
+    lem-Bool | inr x₁ with≡ x₂ = ⊥-rec (x₁ Bool-contr)

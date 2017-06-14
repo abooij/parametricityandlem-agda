@@ -33,19 +33,16 @@ theorem-3-A f nat X x i ineq P P-is-prop = go (inspect (f ((P × Y) ⊔ Unit) (i
       e = (⊔≃ PY-Y (ide Unit)) ⁻¹ ∘e g
       d-claim : is-left (i (f X x)) == false
       d-claim with inspect (i (f X x))
-      d-claim | inl x₁ with≡ x₂ with ineq (! x₁)
-      d-claim | inl x₁ with≡ x₂ | ()
+      d-claim | inl x₁ with≡ x₂ = ⊥-rec (ineq (! x₁))
       d-claim | inr x₁ with≡ x₂ = ap is-left x₂
       e-claim-1 : inl (p , (f X x) , d-claim) == –> e (f X x)
       e-claim-1 with inspect (i (f X x))
-      e-claim-1 | inl x₁ with≡ x₂ with ineq (! x₁)
-      e-claim-1 | inl x₁ with≡ x₂ | ()
+      e-claim-1 | inl x₁ with≡ x₂ = ⊥-rec (ineq (! x₁))
       e-claim-1 | inr x₁ with≡ x₂ = ap inl (pair×= (prop-has-all-paths P-is-prop _ _) idp)
       e-claim-2 : –> e x == inr unit
       e-claim-2 with inspect (i x)
       e-claim-2 | inl x₁ with≡ x₂ = idp
-      e-claim-2 | inr x₁ with≡ x₂ with x₁ idp
-      e-claim-2 | inr x₁ with≡ x₂ | ()
+      e-claim-2 | inr x₁ with≡ x₂ = ⊥-rec (x₁ idp)
 
 theorem-3-B : {{_ : FUNEXT}} → LEM →
   Σ ((X : U) → X → X)
@@ -91,8 +88,7 @@ theorem-3-B lem = f , (f-natural , Bool , (true , f-bool))
     lem-Y : (lem (is-contr (Σ Y (λ y' → y' ≠ y))) is-contr-is-prop) == inl Y-contr
     lem-Y with inspect (lem (is-contr (Σ Y (λ y' → y' ≠ y))) is-contr-is-prop)
     lem-Y | inl x₂ with≡ x₃ = x₃ ∙ ap inl (prop-has-all-paths is-contr-is-prop x₂ Y-contr)
-    lem-Y | inr x₂ with≡ x₃ with x₂ Y-contr
-    lem-Y | inr x₂ with≡ x₃ | ()
+    lem-Y | inr x₂ with≡ x₃ = ⊥-rec (x₂ Y-contr)
   f-natural X Y e x | inr z  with≡ p =
     –> e (f X x) =⟨ p |in-ctx (λ z → –> e (f-aux X x z)) ⟩
     –> e x =⟨ ! lem-Y |in-ctx f-aux Y (–> e x) ⟩
@@ -120,8 +116,7 @@ theorem-3-B lem = f , (f-natural , Bool , (true , f-bool))
     not-Y-contr q = z (<– (is-contr-equiv e-lifted) q)
     lem-Y : (lem (is-contr (Σ Y (λ y' → y' ≠ y))) is-contr-is-prop) == inr not-Y-contr
     lem-Y with inspect (lem (is-contr (Σ Y (λ y' → y' ≠ y))) is-contr-is-prop)
-    lem-Y | inl x₂ with≡ x₃ with not-Y-contr x₂
-    lem-Y | inl x₂ with≡ x₃ | ()
+    lem-Y | inl x₂ with≡ x₃ = ⊥-rec (not-Y-contr x₂)
     lem-Y | inr x₂ with≡ x₃ = x₃ ∙ ap inr (prop-has-all-paths ¬-is-prop _ _)
   f-bool : f Bool true ≠ true
   f-bool u = Bool-true≠false (! u ∙ ap (f-aux Bool true) lem-Bool)
@@ -132,11 +127,9 @@ theorem-3-B lem = f , (f-natural , Bool , (true , f-bool))
     Bool-contr = (false , Bool-false≠true) , go
       where
       go : (y : Σ Bool (λ b' → b' ≠ b)) → false , Bool-false≠true == y
-      go (true  , p) with p idp
-      go (true  , p) | ()
+      go (true  , p) = ⊥-rec (p idp)
       go (false , p) = pair= idp (prop-has-all-paths ¬-is-prop Bool-false≠true p)
     lem-Bool : (lem (is-contr (Σ Bool (λ b' → b' ≠ b))) is-contr-is-prop) == inl Bool-contr
     lem-Bool with inspect (lem (is-contr (Σ Bool (λ b' → b' ≠ b))) is-contr-is-prop)
     lem-Bool | inl x₁ with≡ x₂ = x₂ ∙ ap inl (prop-has-all-paths is-contr-is-prop _ _)
-    lem-Bool | inr x₁ with≡ x₂ with x₁ Bool-contr
-    lem-Bool | inr x₁ with≡ x₂ | ()
+    lem-Bool | inr x₁ with≡ x₂ = ⊥-rec (x₁ Bool-contr)
