@@ -181,12 +181,15 @@ contra f negB a = negB (f a)
 [[]]≃ : {{_ : PTRUNC}} → ∀ {i} {A B : Type i} → A ≃ B → [[ A ]] ≃ [[ B ]]
 [[]]≃ e = [[]]-equiv (–> e) (<– e)
 
-[[]]μ : {{_ : PTRUNC }} → ∀ {i} {A : Type i} → [[ [[ A ]] ]] ≃ [[ A ]]
-[[]]μ = equiv
-  (PTrunc-rec PTrunc-level (idf _))
+[[]]prop : {{_ : PTRUNC }} → ∀ {i} {P : Type i} → is-prop P → [[ P ]] ≃ P
+[[]]prop {P = P} P-is-prop = equiv
+  (PTrunc-rec P-is-prop (idf _))
   p[_]
-  (λ b → prop-has-all-paths PTrunc-level _ _)
+  (λ b → prop-has-all-paths P-is-prop _ _)
   (λ c → prop-has-all-paths PTrunc-level _ _)
+
+[[]]μ : {{_ : PTRUNC }} → ∀ {i} {A : Type i} → [[ [[ A ]] ]] ≃ [[ A ]]
+[[]]μ = [[]]prop PTrunc-level
 
 inhab-prop-equiv-Unit : ∀ {i} {A : Type i} → A → is-prop A → A ≃ Unit
 inhab-prop-equiv-Unit a A-is-prop = contr-equiv-Unit (inhab-prop-is-contr a A-is-prop)
@@ -298,3 +301,17 @@ prop-Unit-to eq = coe (! eq) unit
 
 prop-Unit-from : {{_ : PROPEXT}} {X : U} → is-prop X → X → X == Unit
 prop-Unit-from X-is-prop x = ua-prop X-is-prop (raise-level _ Unit-level) (cst unit) (cst x)
+
+[[]]× : {{_ : UA}} {{_ : FUNEXT}} {{_ : PTRUNC}} → ∀ {i j} {A : Type i} {B : Type j} → [[ A × B ]] ≃ [[ A ]] × [[ B ]]
+[[]]× {A = A} {B = B} = equiv to from from-to to-from
+  where
+  product-prop : is-prop ([[ A ]] × [[ B ]])
+  product-prop = ×-level PTrunc-level PTrunc-level
+  to : [[ A × B ]] → [[ A ]] × [[ B ]]
+  to = PTrunc-rec product-prop (λ {(a , b) → p[ a ] , p[ b ]})
+  from : [[ A ]] × [[ B ]] → [[ A × B ]]
+  from (pa , pb) = PTrunc-rec PTrunc-level (λ a → PTrunc-rec PTrunc-level (λ b → p[ a , b ]) pb) pa
+  to-from : ∀ pab → from (to pab) == pab
+  to-from pab = prop-has-all-paths PTrunc-level _ _
+  from-to : ∀ papb → to (from papb) == papb
+  from-to papb = prop-has-all-paths product-prop _ _
