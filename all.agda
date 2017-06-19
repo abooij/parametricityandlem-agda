@@ -25,4 +25,4 @@ open import lemma18
 open import lemma19
 open import theorem20
 open import corollary21
--- corollary 22 missing
+open import corollary22

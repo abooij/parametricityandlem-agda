@@ -239,6 +239,9 @@ prop-dec-is-prop0 P P-is-prop = all-paths-is-prop go
   go (inr x₁) (inl x₂) = ⊥-rec (x₁ x₂)
   go (inr x₁) (inr x₂) = ¬P-paths _ _ |in-ctx inr
 
+LEM-is-prop : {{_ : FUNEXT}} → ∀ {i} → is-prop (LEM i)
+LEM-is-prop = Π-level (λ P → Π-level (λ P-is-prop → prop-dec-is-prop P P-is-prop))
+
 singleton-equiv-Unit : ∀ {i} → {A : Type i} → (a : A) → (Σ A λ a' → a == a') ≃ Unit
 singleton-equiv-Unit a = contr-equiv-Unit (pathfrom-is-contr a)
 
