@@ -6,21 +6,21 @@ open import HoTT
 open import preliminaries
 open import lemma2
 
-complemented : {{_ : PTRUNC}} (P : U) → Type (lsucc lzero)
-complemented P = Σ U λ Q → [[ Q ⊔ P ]] × ¬ [[ Q × P ]]
+complemented : {{_ : PTRUNC}} → ∀ {i} → (P : Type i) → Type (lsucc i)
+complemented {i = i} P = Σ (Type i) λ Q → [[ Q ⊔ P ]] × ¬ [[ Q × P ]]
 
-complemented-decidable : {{_ : FUNEXT}} {{_ : PTRUNC}} (P : U) → is-prop P → complemented P → P ⊔ ¬ P
+complemented-decidable : {{_ : FUNEXT}} {{_ : PTRUNC}} → ∀ {i} → (P : Type i) → is-prop P → complemented P → P ⊔ ¬ P
 complemented-decidable P P-is-prop (Q , total , disjoint) = PTrunc-rec (prop-dec-is-prop P P-is-prop) go total
   where
   go : Q ⊔ P → Coprod P (¬ P)
   go (inl q) = inr (λ p → disjoint p[ q , p ])
   go (inr p) = inl p
 
-theorem-4-A : {{_ : FUNEXT}} {{_ : PTRUNC}} → (f : (X : U) → X → X) → endomap-natural f → (X : U) → (x : X) → f X x ≠ x → LEM
-theorem-4-A f f-nat X x ineq P P-is-prop =
+theorem-4-A : {{_ : FUNEXT}} {{_ : PTRUNC}} → ∀ {i} → (f : (X : Type i) → X → X) → endomap-natural f → (X : Type i) → (x : X) → f X x ≠ x → LEM i
+theorem-4-A {i = i} f f-nat X x ineq P P-is-prop =
   complemented-decidable _ P-is-prop ([[ x == y ]] , (total , disjoint))
   where
-  Z : U
+  Z : Type i
   Z = Σ X (λ y → [[ [[ x == y ]] ⊔ P ]])
   z : Z
   z = (x , p[ inl p[ idp ] ])

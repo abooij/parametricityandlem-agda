@@ -4,25 +4,27 @@ module preliminaries where
 
 open import HoTT
 
-U = Type lzero
-LEM = (P : U) → is-prop P → P ⊔ ¬ P
-WEM = (A : U) → ¬ A ⊔ ¬ (¬ A)
-DNE = (P : U) → is-prop P → ¬ (¬ P) → P
+LEM : ∀ i → Type (lsucc i)
+LEM i = (P : Type i) → is-prop P → P ⊔ ¬ P
+WEM : ∀ i → Type (lsucc i)
+WEM i = (A : Type i) → ¬ A ⊔ ¬ (¬ A)
+DNE : ∀ i → Type (lsucc i)
+DNE i = (P : Type i) → is-prop P → ¬ (¬ P) → P
 
-endomap-natural : (f : (X : U) → X → X) → Type (lsucc lzero)
-endomap-natural f = (X Y : U) → (e : X ≃ Y) → (x : X)→  –> e (f X x) == f Y (–> e x)
+endomap-natural : ∀ {i} → (f : (X : Type i) → X → X) → Type (lsucc i)
+endomap-natural {i} f = (X Y : Type i) → (e : X ≃ Y) → (x : X)→  –> e (f X x) == f Y (–> e x)
 
-universe-natural : (f : (X : U) → Bool) → Type (lsucc lzero)
-universe-natural f = (X Y : U) → (e : X ≃ Y) → f X == f Y
+universe-natural : ∀ {i} → (f : (X : Type i) → Bool) → Type (lsucc i)
+universe-natural {i} f = (X Y : Type i) → (e : X ≃ Y) → f X == f Y
 
-dec-natural : (f : (X : U) → X → Bool) → Type (lsucc lzero)
-dec-natural f = (X Y : U) → (e : X ≃ Y) → (x : X) → f Y (–> e x) == f X x
+dec-natural : ∀ {i} → (f : (X : Type i) → X → Bool) → Type (lsucc i)
+dec-natural {i} f = (X Y : Type i) → (e : X ≃ Y) → (x : X) → f Y (–> e x) == f X x
 
-equiv-invariant : (f : U → U) → Type (lsucc lzero)
-equiv-invariant f = {X Y : U} → X ≃ Y → f X ≃ f Y
+equiv-invariant :  ∀ {i} → (f : Type i → Type i) → Type (lsucc i)
+equiv-invariant {i} f = {X Y : Type i} → X ≃ Y → f X ≃ f Y
 
-pointed-invariant : (f : (X : U) → X → U) → Type (lsucc lzero)
-pointed-invariant f = {X Y : U} → (e : X ≃ Y) → (x : X) → f X x ≃ f Y (–> e x)
+pointed-invariant :  ∀ {i} → (f : (X : Type i) → X → Type i) → Type (lsucc i)
+pointed-invariant {i} f = {X Y : Type i} → (e : X ≃ Y) → (x : X) → f X x ≃ f Y (–> e x)
 
 data Singleton {i} {A : Set i} (x : A) : Set i where
   _with≡_ : (y : A) → x == y → Singleton x
@@ -30,13 +32,13 @@ data Singleton {i} {A : Set i} (x : A) : Set i where
 inspect : ∀ {i} {A : Set i} (x : A) → Singleton x
 inspect x = x with≡ idp
 
-–>-preserves-≠ : {X Y : U} → (e : X ≃ Y) → {x x' : X} → x ≠ x' → –> e x ≠ –> e x'
+–>-preserves-≠ : ∀ {i j} → {X : Type i} → {Y : Type j} → (e : X ≃ Y) → {x x' : X} → x ≠ x' → –> e x ≠ –> e x'
 –>-preserves-≠ e = inj-preserves-≠ (–>-is-inj e)
 
-<–-preserves-≠ : {X Y : U} → (e : X ≃ Y) → {y y' : Y} → y ≠ y' → <– e y ≠ <– e y'
+<–-preserves-≠ : ∀ {i j} → {X : Type i} → {Y : Type j} → (e : X ≃ Y) → {y y' : Y} → y ≠ y' → <– e y ≠ <– e y'
 <–-preserves-≠ e = inj-preserves-≠ (–>-is-inj (e ⁻¹))
 
-is-contr-equiv : {{_ : FUNEXT}} {X Y : U} → X ≃ Y → is-contr X ≃ is-contr Y
+is-contr-equiv : {{_ : FUNEXT}} → ∀ {i} {X Y : Type i} → X ≃ Y → is-contr X ≃ is-contr Y
 is-contr-equiv e = equiv
   (λ {(x , xp) → (–> e x) , (λ y → ap (–> e) (xp (<– e y)) ∙ <–-inv-r e y)})
   (λ {(y , yp) → (<– e y) , (λ x → ap (<– e) (yp (–> e x)) ∙ <–-inv-l e x)})
@@ -50,16 +52,16 @@ is-prop-equiv e X-prop = all-paths-is-prop (λ y y' →
   –> e (<– e y') =⟨ <–-inv-r e y' ⟩
   y' =∎)
 
-isolated : {X : U} → (x : X) → U
-isolated {X} x = (y : X) → (x == y) ⊔ (x ≠ y)
+isolated : ∀ {i} → {X : Type i} → (x : X) → Type i
+isolated {i} {X} x = (y : X) → (x == y) ⊔ (x ≠ y)
 
 infix 20 _⇔_
 
 _⇔_ : ∀ {i j} (A : Type i) (B : Type j) → Type (lmax i j)
 A ⇔ B = (A → B) × (B → A)
 
-×≃ : ∀ {i} {A B C D : Type i} → A ≃ B → C ≃ D → A × C ≃ B × D
-×≃ {_} {A} {B} {C} {D} e f = equiv to from from-to to-from
+×≃ : ∀ {i j k l} {A : Type i} {B : Type j} {C : Type k} {D : Type l} → A ≃ B → C ≃ D → A × C ≃ B × D
+×≃ {A = A} {B} {C} {D} e f = equiv to from from-to to-from
   where
   to : A × C → B × D
   to (a , c) = (–> e a) , (–> f c)
@@ -70,8 +72,8 @@ A ⇔ B = (A → B) × (B → A)
   from-to : (bd : B × D) → to (from bd) == bd
   from-to (b , d) = pair×= (<–-inv-r e b) (<–-inv-r f d)
 
-⊔≃ : ∀ {i} {A B C D : Type i} → A ≃ B → C ≃ D → A ⊔ C ≃ B ⊔ D
-⊔≃ {_} {A} {B} {C} {D} e f = equiv to from from-to to-from
+⊔≃ : ∀ {i j k l} {A : Type i} {B : Type j} {C : Type k} {D : Type l} → A ≃ B → C ≃ D → A ⊔ C ≃ B ⊔ D
+⊔≃ {A = A} {B} {C} {D} e f = equiv to from from-to to-from
   where
   to : A ⊔ C → B ⊔ D
   to (inl a) = inl (–> e a)
@@ -136,7 +138,7 @@ is-right : ∀ {i} {A B : Type i} → A ⊔ B → Bool
 is-right (inl _) = false
 is-right (inr _) = true
 
-¬-is-prop0 : {{_ : FUNEXT0}} → {A : U} → is-prop (¬ A)
+¬-is-prop0 : {{_ : FUNEXT0}} → ∀ {i} {A : Type i} → is-prop (¬ A)
 ¬-is-prop0 {A} = all-paths-is-prop (λ x y → λ=0)
 
 inhab-¬-Empty : {{_ : FUNEXT}} → ∀ {i} {A : Type i} → A → ¬ A ≃ Empty
@@ -163,7 +165,7 @@ inhab-¬-Empty0 {A = A} a = equiv to from from-to to-from
   from-to : ∀ u → to (from u) == u
   from-to ()
 
-prop-equiv : ∀ {i} {A B : Type i} → is-prop A → is-prop B → (A → B) → (B → A) → A ≃ B
+prop-equiv : ∀ {i j} {A : Type i} {B : Type j} → is-prop A → is-prop B → (A → B) → (B → A) → A ≃ B
 prop-equiv A-is-prop B-is-prop f g =
   equiv f g
     (λ b → prop-has-all-paths B-is-prop _ _)
@@ -172,13 +174,13 @@ prop-equiv A-is-prop B-is-prop f g =
 contra : ∀ {i j} {A : Type i} {B : Type j} → (A → B) → ¬ B → ¬ A
 contra f negB a = negB (f a)
 
-[[]]-equiv : {{_ : PTRUNC}} → ∀ {i} {A B : Type i} → (A → B) → (B → A) → [[ A ]] ≃ [[ B ]]
+[[]]-equiv : {{_ : PTRUNC}} → ∀ {i j} {A : Type i} {B : Type j} → (A → B) → (B → A) → [[ A ]] ≃ [[ B ]]
 [[]]-equiv f g =
   prop-equiv PTrunc-level PTrunc-level
     (PTrunc-rec PTrunc-level (p[_] ∘ f))
     (PTrunc-rec PTrunc-level (p[_] ∘ g))
 
-[[]]≃ : {{_ : PTRUNC}} → ∀ {i} {A B : Type i} → A ≃ B → [[ A ]] ≃ [[ B ]]
+[[]]≃ : {{_ : PTRUNC}} → ∀ {i j} {A : Type i} {B : Type j} → A ≃ B → [[ A ]] ≃ [[ B ]]
 [[]]≃ e = [[]]-equiv (–> e) (<– e)
 
 [[]]prop : {{_ : PTRUNC }} → ∀ {i} {P : Type i} → is-prop P → [[ P ]] ≃ P
@@ -211,7 +213,7 @@ component-is-prop {A = A} a a-is-prop = inhab-prop-is-contr (a , p[ idp ]) prop
   prop : is-prop (Σ A λ a' → [[ a == a' ]])
   prop = all-paths-is-prop go
 
-prop-dec-is-prop : {{_ : FUNEXT}} (P : U) → is-prop P → is-prop (P ⊔ ¬ P)
+prop-dec-is-prop : {{_ : FUNEXT}} → ∀ {i} → (P : Type i) → is-prop P → is-prop (P ⊔ ¬ P)
 prop-dec-is-prop P P-is-prop = all-paths-is-prop go
   where
   P-paths : has-all-paths P
@@ -224,7 +226,7 @@ prop-dec-is-prop P P-is-prop = all-paths-is-prop go
   go (inr x₁) (inl x₂) = ⊥-rec (x₁ x₂)
   go (inr x₁) (inr x₂) = ¬P-paths _ _ |in-ctx inr
 
-prop-dec-is-prop0 : {{_ : FUNEXT0}} (P : U) → is-prop P → is-prop (P ⊔ ¬ P)
+prop-dec-is-prop0 : {{_ : FUNEXT0}} → ∀ {i} → (P : Type i) → is-prop P → is-prop (P ⊔ ¬ P)
 prop-dec-is-prop0 P P-is-prop = all-paths-is-prop go
   where
   P-paths : has-all-paths P
@@ -287,20 +289,23 @@ join-Unit-idem {A = A} = equiv to from from-to to-from
 ¬-contra : ∀ {i j} {X : Type i} {Y : Type j} → (X → Y) → ¬ Y → ¬ X
 ¬-contra f negY x = negY (f x)
 
-prop-Empty-to : {X : U} → X == Empty → ¬ X
-prop-Empty-to = coe
+lift-≠ : ∀ {i j} {A : Type i} {a b : Lift {j = j} A} → lower a ≠ lower b → a ≠ b
+lift-≠ = –>-preserves-≠ lift-equiv
 
-prop-Empty-from : {{_ : PROPEXT}} {X : U} → ¬ X → X == Empty
-prop-Empty-from {X} nx = ua-prop X-is-prop Empty-level nx ⊥-rec
+prop-Empty-to : ∀ {i} → {X : Type i} → X == Lift Empty → ¬ X
+prop-Empty-to p = lower ∘ coe p
+
+prop-Empty-from : {{_ : PROPEXT}} → ∀ {i} {X : Type i} → ¬ X → X == Lift Empty
+prop-Empty-from {X = X} nx = ua-prop X-is-prop (Lift-level Empty-level) (lift ∘ nx) (⊥-rec ∘ lower)
   where
   X-is-prop : is-prop X
   X-is-prop = all-paths-is-prop (λ x _ → ⊥-rec (nx x))
 
-prop-Unit-to : {X : U} → X == Unit → X
-prop-Unit-to eq = coe (! eq) unit
+prop-Unit-to : ∀ {i} {X : Type i} → X == Lift Unit → X
+prop-Unit-to eq = coe (! eq) (lift unit)
 
-prop-Unit-from : {{_ : PROPEXT}} {X : U} → is-prop X → X → X == Unit
-prop-Unit-from X-is-prop x = ua-prop X-is-prop (raise-level _ Unit-level) (cst unit) (cst x)
+prop-Unit-from : {{_ : PROPEXT}} → ∀ {i} {X : Type i} → is-prop X → X → X == Lift Unit
+prop-Unit-from X-is-prop x = ua-prop X-is-prop (raise-level _ (Lift-level Unit-level)) (cst (lift unit)) (cst x)
 
 [[]]× : {{_ : UA}} {{_ : FUNEXT}} {{_ : PTRUNC}} → ∀ {i j} {A : Type i} {B : Type j} → [[ A × B ]] ≃ [[ A ]] × [[ B ]]
 [[]]× {A = A} {B = B} = equiv to from from-to to-from

@@ -5,16 +5,16 @@ module theorem9 where
 open import HoTT
 open import preliminaries
 
-theorem-9 : {{_ : PUSHOUT}} {{_ : PTRUNC}} {{_ : FUNEXT0}} →
-  (P Q : (X : U) → X → U) →
+theorem-9 : {{_ : PUSHOUT}} {{_ : PTRUNC}} {{_ : FUNEXT0}} → ∀ {i} →
+  (P Q : (X : Type i) → X → Type i) →
   pointed-invariant P → pointed-invariant Q →
-  ((Z : U) → (z : Z) → [[ P Z z ⊔ Q Z z ]]) →
-  (X Y : U) → (x : X) → (y : Y) →
+  ((Z : Type i) → (z : Z) → [[ P Z z ⊔ Q Z z ]]) →
+  (X Y : Type i) → (x : X) → (y : Y) →
   ¬ (P X x) → ¬ (Q Y y) →
-  WEM
-theorem-9 P Q P-inv Q-inv total X Y x y negPXx negQYy A = claim-E
+  WEM i
+theorem-9 {i = i} P Q P-inv Q-inv total X Y x y negPXx negQYy A = claim-E
   where
-  Z : U
+  Z : Type i
   Z = (Σ X λ x' → (x == x') * ¬ A) × (Σ Y λ y' → (y == y') * ¬ (¬ A))
   z : Z
   z = (x , (jleft idp)) , (y , jleft idp)
@@ -48,7 +48,7 @@ theorem-9 P Q P-inv Q-inv total X Y x y negPXx negQYy A = claim-E
     (Σ X λ x' → (x == x') * ¬ A) × (Σ Y λ y' → (y == y') * ¬ (¬ A))
       ≃⟨ ×-emap
         (Σ-emap-r (λ y' → *-emap (ide _) (inhab-prop-equiv-Unit negA ¬-is-prop0)))
-        (Σ-emap-r (λ x' → *-emap (ide _) (inhab-¬-Empty0 negA)))
+        (Σ-emap-r (λ x' → *-emap {j = i} (ide _) (inhab-¬-Empty0 negA)))
        ⟩
     (Σ X λ x' → (x == x') * Unit) × (Σ Y λ y' → (y == y') * Empty)
       ≃⟨ ×-emap

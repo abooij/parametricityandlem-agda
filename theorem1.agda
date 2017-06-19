@@ -5,7 +5,9 @@ module theorem1 where
 open import HoTT
 open import preliminaries
 
-theorem-1-A : (f : (X : U) → X → X) → endomap-natural f → ¬ ((x : Bool) → f Bool x == x) → LEM
+U = Type lzero
+
+theorem-1-A : (f : (X : U) → X → X) → endomap-natural f → ¬ ((x : Bool) → f Bool x == x) → LEM lzero
 theorem-1-A f k q P u with inspect (f (P ⊔ Unit) (inr unit))
 theorem-1-A f k q P u | inl p with≡ _ = inl p
 theorem-1-A f k q P u | inr unit with≡ z = inr (claim-C z)
@@ -55,7 +57,7 @@ theorem-1-A f k q P u | inr unit with≡ z = inr (claim-C z)
   claim-C | inl i = claim-C-l i
   claim-C | inr i = claim-C-r i
 
-theorem-1-B : {{_ : FUNEXT}} → LEM → Σ ((X : U) → X → X) (λ f → endomap-natural f × ¬ ((x : Bool) → f Bool x == x))
+theorem-1-B : {{_ : FUNEXT}} → LEM lzero → Σ ((X : U) → X → X) (λ f → endomap-natural f × ¬ ((x : Bool) → f Bool x == x))
 theorem-1-B lem = f , (f-natural , f-bool)
   where
   f-aux : (X : U) → (x : X) → (is-contr (Σ X (λ x' → x' ≠ x))) ⊔ ¬ (is-contr (Σ X (λ x' → x' ≠ x))) → X

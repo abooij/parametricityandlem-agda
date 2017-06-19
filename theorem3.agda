@@ -6,13 +6,13 @@ open import HoTT
 open import preliminaries
 open import lemma2
 
-theorem-3-A : (f : (X : U) → X → X) → endomap-natural f → (X : U) → (x : X) → isolated x → f X x ≠ x → LEM
-theorem-3-A f nat X x i ineq P P-is-prop = go (inspect (f ((P × Y) ⊔ Unit) (inr unit)))
+theorem-3-A : ∀ {i} → (f : (X : Type i) → X → X) → endomap-natural f → (X : Type i) → (x : X) → isolated x → f X x ≠ x → LEM i
+theorem-3-A {i = i} f nat X x j ineq P P-is-prop = go (inspect (f ((P × Y) ⊔ Unit) (inr unit)))
   where
-  Y : U
-  Y = fst (fst (fst (lemma-2 x) i))
+  Y : Type i
+  Y = fst (fst (fst (lemma-2 x) j))
   g : X ≃ Y ⊔ Unit
-  g = snd (fst (fst (lemma-2 x) i))
+  g = snd (fst (fst (lemma-2 x) j))
   go : Singleton (f ((P × Y) ⊔ Unit) (inr unit)) → P ⊔ ¬ P
   go (inl (p , _) with≡ _) = inl p
   go (inr unit with≡ q) = inr not-P
@@ -31,32 +31,32 @@ theorem-3-A f nat X x i ineq P P-is-prop = go (inspect (f ((P × Y) ⊔ Unit) (i
       PY-Y = ×-Unit ∘e ×≃ (contr-equiv-Unit P-contr) (ide Y)
       e : X ≃ (P × Y) ⊔ Unit
       e = (⊔≃ PY-Y (ide Unit)) ⁻¹ ∘e g
-      d-claim : is-left (i (f X x)) == false
-      d-claim with inspect (i (f X x))
+      d-claim : is-left (j (f X x)) == false
+      d-claim with inspect (j (f X x))
       d-claim | inl x₁ with≡ x₂ = ⊥-rec (ineq (! x₁))
       d-claim | inr x₁ with≡ x₂ = ap is-left x₂
       e-claim-1 : inl (p , (f X x) , d-claim) == –> e (f X x)
-      e-claim-1 with inspect (i (f X x))
+      e-claim-1 with inspect (j (f X x))
       e-claim-1 | inl x₁ with≡ x₂ = ⊥-rec (ineq (! x₁))
       e-claim-1 | inr x₁ with≡ x₂ = ap inl (pair×= (prop-has-all-paths P-is-prop _ _) idp)
       e-claim-2 : –> e x == inr unit
-      e-claim-2 with inspect (i x)
+      e-claim-2 with inspect (j x)
       e-claim-2 | inl x₁ with≡ x₂ = idp
       e-claim-2 | inr x₁ with≡ x₂ = ⊥-rec (x₁ idp)
 
-theorem-3-B : {{_ : FUNEXT}} → LEM →
-  Σ ((X : U) → X → X)
+theorem-3-B : {{_ : FUNEXT}} → ∀ {i} → LEM i →
+  Σ ((X : Type i) → X → X)
     (λ f → endomap-natural f ×
-           (Σ U
+           (Σ (Type i)
               (λ X →
                  (Σ X
                     (λ x → f X x ≠ x)))))
-theorem-3-B lem = f , (f-natural , Bool , (true , f-bool))
+theorem-3-B {i = i} lem = f , (f-natural , Lift Bool , (lift true , f-bool))
   where
-  f-aux : (X : U) → (x : X) → (is-contr (Σ X (λ x' → x' ≠ x))) ⊔ ¬ (is-contr (Σ X (λ x' → x' ≠ x))) → X
+  f-aux : (X : Type i) → (x : X) → (is-contr (Σ X (λ x' → x' ≠ x))) ⊔ ¬ (is-contr (Σ X (λ x' → x' ≠ x))) → X
   f-aux X x (inl x') = fst (fst x')
   f-aux X x (inr z) = x
-  f : (X : U) → X → X
+  f : (X : Type i) → X → X
   f X x = f-aux X x (lem (is-contr (Σ X (λ x' → x' ≠ x))) is-contr-is-prop)
   f-natural : endomap-natural f
   f-natural X Y e x with inspect (lem (is-contr (Σ X (λ x' → x' ≠ x))) is-contr-is-prop)
@@ -118,18 +118,18 @@ theorem-3-B lem = f , (f-natural , Bool , (true , f-bool))
     lem-Y with inspect (lem (is-contr (Σ Y (λ y' → y' ≠ y))) is-contr-is-prop)
     lem-Y | inl x₂ with≡ x₃ = ⊥-rec (not-Y-contr x₂)
     lem-Y | inr x₂ with≡ x₃ = x₃ ∙ ap inr (prop-has-all-paths ¬-is-prop _ _)
-  f-bool : f Bool true ≠ true
-  f-bool u = Bool-true≠false (! u ∙ ap (f-aux Bool true) lem-Bool)
+  f-bool : f (Lift Bool) (lift true) ≠ (lift true)
+  f-bool u = lift-≠ Bool-true≠false ((! u ∙ ap (f-aux (Lift Bool) (lift true)) lem-Bool)) --
     where
-    b : Bool
-    b = true
-    Bool-contr : is-contr (Σ Bool (λ b' → b' ≠ b))
-    Bool-contr = (false , Bool-false≠true) , go
+    b : Lift Bool
+    b = lift true
+    Bool-contr : is-contr (Σ (Lift Bool) (λ b' → b' ≠ b))
+    Bool-contr = (lift false , lift-≠ Bool-false≠true) , go
       where
-      go : (y : Σ Bool (λ b' → b' ≠ b)) → false , Bool-false≠true == y
-      go (true  , p) = ⊥-rec (p idp)
-      go (false , p) = pair= idp (prop-has-all-paths ¬-is-prop Bool-false≠true p)
-    lem-Bool : (lem (is-contr (Σ Bool (λ b' → b' ≠ b))) is-contr-is-prop) == inl Bool-contr
-    lem-Bool with inspect (lem (is-contr (Σ Bool (λ b' → b' ≠ b))) is-contr-is-prop)
+      go : (y : Σ (Lift Bool) (λ b' → b' ≠ b)) → lift false , lift-≠ Bool-false≠true == y
+      go (lift true  , p) = ⊥-rec (p idp)
+      go (lift false , p) = pair= idp (prop-has-all-paths ¬-is-prop (lift-≠ Bool-false≠true) p)
+    lem-Bool : (lem (is-contr (Σ (Lift Bool) (λ b' → b' ≠ b))) is-contr-is-prop) == inl Bool-contr
+    lem-Bool with inspect (lem (is-contr (Σ (Lift Bool) (λ b' → b' ≠ b))) is-contr-is-prop)
     lem-Bool | inl x₁ with≡ x₂ = x₂ ∙ ap inl (prop-has-all-paths is-contr-is-prop _ _)
     lem-Bool | inr x₁ with≡ x₂ = ⊥-rec (x₁ Bool-contr)

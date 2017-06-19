@@ -5,20 +5,20 @@ module theorem5 where
 open import HoTT
 open import preliminaries
 
-theorem-5-A : {{_ : FUNEXT0}} →
-  (f : (X : U) → Bool) →
+theorem-5-A : {{_ : FUNEXT0}} → ∀ {i} →
+  (f : (X : Type i) → Bool) →
   universe-natural f →
-  (X Y : U) →
-  f X ≠ f Y → WEM
-theorem-5-A f f-nat X Y ineq A = claim-E
+  (X Y : Type i) →
+  f X ≠ f Y → WEM i
+theorem-5-A {i = i} f f-nat X Y ineq A = claim-E
   where
-  wlog-X : Σ U λ X^ → f X^ == true
+  wlog-X : Σ (Type i) λ X^ → f X^ == true
   wlog-X with inspect (f X)
   wlog-X | true  with≡ p = X , p
   wlog-X | false with≡ p with inspect (f Y)
   wlog-X | false with≡ p | false with≡ q = ⊥-rec (ineq (p ∙ ! q))
   wlog-X | false with≡ p | true  with≡ q = Y , q
-  wlog-Y : Σ U λ Y^ → f Y^ == false
+  wlog-Y : Σ (Type i) λ Y^ → f Y^ == false
   wlog-Y with inspect (f Y)
   wlog-Y | false with≡ p = Y , p
   wlog-Y | true  with≡ p with inspect (f X)
@@ -28,7 +28,7 @@ theorem-5-A f f-nat X Y ineq A = claim-E
   f-X^ = snd wlog-X
   Y^ = fst wlog-Y
   f-Y^ = snd wlog-Y
-  Z : U
+  Z : Type i
   Z = (¬ A × X^) ⊔ (¬ (¬ A) × Y^)
   claim-A : ¬ A → Z ≃ X^
   claim-A negA =
@@ -39,11 +39,11 @@ theorem-5-A f f-nat X Y ineq A = claim-E
        ⟩
     (Unit × X^) ⊔ (Empty × Y^)
       ≃⟨ ⊔≃
-        ×-Unit
-        ×-Empty
+        ×-Unit -- ×-Unit
+        ×-Empty -- ×-Empty
        ⟩
     X^ ⊔ Empty
-      ≃⟨ ⊔-Empty ⟩
+      ≃⟨ ⊔-Empty ⟩ --
     X^
       ≃∎
   claim-B : ¬ A → f Z == true

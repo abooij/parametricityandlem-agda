@@ -5,14 +5,14 @@ module theorem8 where
 open import HoTT
 open import preliminaries
 
-theorem-8 : {{_ : PTRUNC}} {{_ : FUNEXT0}} →
-  (P Q : U → U) → equiv-invariant P → equiv-invariant Q →
-  ((Z : U) → [[ P Z ⊔ Q Z ]]) →
-  (X Y : U) → ¬ (P X) → ¬ (Q Y) →
-  WEM
-theorem-8 P Q P-inv Q-inv total X Y negPX negQY A = claim-E
+theorem-8 : {{_ : PTRUNC}} {{_ : FUNEXT0}} → ∀ {i} →
+  (P Q : Type i → Type i) → equiv-invariant P → equiv-invariant Q →
+  ((Z : Type i) → [[ P Z ⊔ Q Z ]]) →
+  (X Y : Type i) → ¬ (P X) → ¬ (Q Y) →
+  WEM i
+theorem-8 {i = i}P Q P-inv Q-inv total X Y negPX negQY A = claim-E
   where
-  Z : U
+  Z : Type i
   Z = (¬ A × X) ⊔ ¬ (¬ A) × Y
   claim-A : A → Z ≃ Y
   claim-A a =

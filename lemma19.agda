@@ -8,10 +8,14 @@ open import lemma14
 open import lemma15
 open import lemma18
 
-lemma-19 : {{_ : UA}} {{_ : PROPEXT}} {{_ : PTRUNC}} {{_ : FUNEXT0}} {{_ : FUNEXT}} → (f : U → U) → is-inj f → (A : U) → [[ A ]] → f A == Empty → LEM
-lemma-19 f f-inj A pa eq = lemma-14-B (lemma-15-B go)
+lemma-19 : {{_ : UA}} {{_ : PROPEXT}} {{_ : PTRUNC}}
+  {{_ : FUNEXT0}} {{_ : FUNEXT}} → ∀ {i} →
+  (f : Type i → Type i) → is-inj f →
+  (A : Type i) → [[ A ]] →
+  f A == Lift Empty → LEM i
+lemma-19 {i = i} f f-inj A pa eq = lemma-14-B (lemma-15-B go)
   where
-  go : (P : U) → is-prop P → Σ U (λ X → P ⇔ ¬ X)
+  go : (P : Type i) → is-prop P → Σ (Type i) (λ X → P ⇔ ¬ X)
   go P P-is-prop = (f (P × A)) , (to , from)
     where
     to : P → ¬ (f (P × A))

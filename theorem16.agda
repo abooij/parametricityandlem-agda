@@ -6,10 +6,10 @@ open import HoTT
 open import preliminaries
 open import lemma15
 
-theorem-16 : {{_ : PROPEXT}} → (f : U → U) → is-inj f → f Unit == Empty → DNE
-theorem-16 f f-inj p = lemma-15-B go
+theorem-16 : {{_ : PROPEXT}} → ∀ {i} → (f : Type i → Type i) → is-inj f → f (Lift Unit) == (Lift Empty) → DNE i
+theorem-16 {i = i} f f-inj p = lemma-15-B go
   where
-  go : (P : U) → is-prop P → Σ U (λ X → P ⇔ ¬ X)
+  go : (P : Type i) → is-prop P → Σ (Type i) (λ X → P ⇔ ¬ X)
   go P P-is-prop = f P , (to , from)
     where
     to : P → ¬ (f P)
@@ -21,6 +21,6 @@ theorem-16 f f-inj p = lemma-15-B go
     from : ¬ (f P) → P
     from =
          prop-Unit-to             -- propext
-       ∘ f-inj P Unit             -- f left-cancellable
+       ∘ f-inj P (Lift Unit)             -- f left-cancellable
        ∘ (λ q → q ∙ (! p))        -- assumption f Unit == Empty
        ∘ prop-Empty-from          -- propext

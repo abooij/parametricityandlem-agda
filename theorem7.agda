@@ -7,28 +7,28 @@ open import preliminaries
 open import lemma2
 open import theorem6
 
-theorem-7-A : {{_ : PTRUNC}} {{_ : FUNEXT}} →
-  (f : (X : U) → X → Bool) →
+theorem-7-A : {{_ : PTRUNC}} {{_ : FUNEXT}} → ∀ {i} →
+  (f : (X : Type i) → X → Bool) →
   dec-natural f →
-  (X Y : U) →
+  (X Y : Type i) →
   (x : X) → is-prop (x == x) →
   (y : Y) → is-prop (y == y) →
-  f X x ≠ f Y y → WEM
-theorem-7-A f f-nat X Y x x-prop y y-prop ineq A = claim-E
+  f X x ≠ f Y y → WEM i
+theorem-7-A {i = i} f f-nat X Y x x-prop y y-prop ineq A = claim-E
   where
-  wlog-X : Σ U λ X' → Σ X' λ x' → is-prop (x' == x') × (f X' x' == true)
+  wlog-X : Σ (Type i) λ X' → Σ X' λ x' → is-prop (x' == x') × (f X' x' == true)
   wlog-X with inspect (f X x)
   wlog-X | true  with≡ p = X , (x , (x-prop , p))
   wlog-X | false with≡ p with inspect (f Y y)
   wlog-X | false with≡ p | false with≡ q = ⊥-rec (ineq (p ∙ ! q))
   wlog-X | false with≡ p | true  with≡ q = Y , (y , (y-prop , q))
-  wlog-Y : Σ U λ Y' → Σ Y' λ y' → is-prop (y' == y') × (f Y' y' == false)
+  wlog-Y : Σ (Type i) λ Y' → Σ Y' λ y' → is-prop (y' == y') × (f Y' y' == false)
   wlog-Y with inspect (f Y y)
   wlog-Y | false with≡ p = Y , (y , (y-prop , p))
   wlog-Y | true  with≡ p with inspect (f X x)
   wlog-Y | true  with≡ p | true  with≡ q = ⊥-rec (ineq (q ∙ ! p))
   wlog-Y | true  with≡ p | false with≡ q = X , (x , (x-prop , q))
-  X^ : U
+  X^ : Type i
   X^ = fst wlog-X
   x^ : X^
   x^ = fst (snd wlog-X)
@@ -36,7 +36,7 @@ theorem-7-A f f-nat X Y x x-prop y y-prop ineq A = claim-E
   x^-prop = fst (snd (snd wlog-X))
   f-x^ : f X^ x^ == true
   f-x^ = snd (snd (snd wlog-X))
-  Y^ : U
+  Y^ : Type i
   Y^ = fst wlog-Y
   y^ : Y^
   y^ = fst (snd wlog-Y)
@@ -44,7 +44,7 @@ theorem-7-A f f-nat X Y x x-prop y y-prop ineq A = claim-E
   y^-prop = fst (snd (snd wlog-Y))
   f-y^ : f Y^ y^ == false
   f-y^ = snd (snd (snd wlog-Y))
-  Z : U
+  Z : Type i
   Z = (Σ X^ λ x' → [[ (x^ == x') ⊔ ¬ A ]]) × (Σ Y^ λ y' → [[ (y^ == y') ⊔ ¬ (¬ A) ]])
   z : Z
   z = (x^ , p[ inl idp ]) , (y^ , p[ inl idp ])
@@ -78,7 +78,7 @@ theorem-7-A f f-nat X Y x x-prop y y-prop ineq A = claim-E
   claim-C a =
     (Σ X^ λ x' → [[ (x^ == x') ⊔ ¬ A ]]) × (Σ Y^ λ y' → [[ (y^ == y') ⊔ ¬ (¬ A) ]])
       ≃⟨ ×≃
-        (Σ-emap-r (λ x' → [[]]≃ (⊔≃ (ide _) (inhab-¬-Empty a))))
+        (Σ-emap-r (λ x' → [[]]≃ (⊔≃ {k = i} (ide _) (inhab-¬-Empty a))))
         (Σ-emap-r (λ y' → [[]]≃ (⊔≃ (ide _) (inhab-prop-equiv-Unit (λ x₁ → x₁ a) ¬-is-prop))))
        ⟩
     (Σ X^ λ x' → [[ (x^ == x') ⊔ Empty ]]) × (Σ Y^ λ y' → [[ (y^ == y') ⊔ Unit ]])
@@ -113,13 +113,13 @@ theorem-7-A f f-nat X Y x x-prop y y-prop ineq A = claim-E
   claim-E | true with≡ x₂ = inl (claim-D-contra x₂)
   claim-E | false with≡ x₂ = inr (claim-B-contra x₂)
 
-theorem-7-B : {{_ : PTRUNC}} {{_ : FUNEXT0}} → WEM →
-  Σ ((X : U) → X → Bool)
+theorem-7-B : {{_ : PTRUNC}} {{_ : FUNEXT0}} → ∀ {i} → WEM i →
+  Σ ((X : Type i) → X → Bool)
   λ f → dec-natural f ×
-  Σ U λ X → Σ U λ Y →
+  Σ (Type i) λ X → Σ (Type i) λ Y →
   Σ X λ x → Σ Y λ y →
   is-prop (x == x) × is-prop (y == y) ×
   (f X x ≠ f Y y)
-theorem-7-B wem = f , (f-natural , (Unit , (Bool , (unit , (true , (raise-level _ (raise-level _ Unit-level) _ _ , (Bool-level true true , (λ ineq → Bool-false≠true (! claim-A ∙ ineq ∙ claim-B)))))))))
+theorem-7-B {i = i} wem = f , (f-natural , (Lift Unit , (Lift Bool , (lift unit , (lift true , (Lift-level (raise-level _ (raise-level _ Unit-level)) _ _ , (Lift-level Bool-level (lift true) (lift true) , (λ ineq → Bool-false≠true (! claim-A ∙ ineq ∙ claim-B)))))))))
   where
   open onlyif wem
