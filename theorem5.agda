@@ -5,12 +5,12 @@ module theorem5 where
 open import HoTT
 open import preliminaries
 
-theorem-6-A : {{_ : FUNEXT0}} →
+theorem-5-A : {{_ : FUNEXT0}} →
   (f : (X : U) → Bool) →
   universe-natural f →
   (X Y : U) →
   f X ≠ f Y → WEM
-theorem-6-A f f-nat X Y ineq A = claim-E
+theorem-5-A f f-nat X Y ineq A = claim-E
   where
   wlog-X : Σ U λ X^ → f X^ == true
   wlog-X with inspect (f X)
@@ -74,3 +74,5 @@ theorem-6-A f f-nat X Y ineq A = claim-E
   claim-E with inspect (f Z)
   claim-E | true with≡ x₂ = inl (claim-D-contra x₂)
   claim-E | false with≡ x₂ = inr (claim-B-contra x₂)
+
+-- TODO back direction

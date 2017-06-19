@@ -1,18 +1,18 @@
 {-# OPTIONS --without-K --rewriting #-}
 
-module section3-1 where
+module theorem10 where
 
 open import HoTT
 open import preliminaries
-open import lemma10
+open import lemma14
 
-section3-1 : {{_ : FUNEXT}} {{_ : PROPEXT}} →
+theorem-10 : {{_ : FUNEXT}} {{_ : PROPEXT}} →
   LEM →
   Σ (U ≃ U) λ e → –> e Empty == Unit
-section3-1 lem = equiv f f f-inv f-inv , f-comp
+theorem-10 lem = equiv f f f-inv f-inv , f-comp
   where
   ¬¬-id : (X : U) → is-prop X → ¬ (¬ X) == X
-  ¬¬-id X X-is-prop = ua-prop ¬-is-prop X-is-prop (lemma-10-A lem X X-is-prop) ¬¬η
+  ¬¬-id X X-is-prop = ua-prop ¬-is-prop X-is-prop (lemma-14-A lem X X-is-prop) ¬¬η
   f : U → U
   f X with lem (is-prop X) is-prop-is-prop
   f X | inl X-is-prop = ¬ X

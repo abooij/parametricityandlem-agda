@@ -5,34 +5,13 @@ module lemma14 where
 open import HoTT
 open import preliminaries
 
-lemma-14 : {{_ : UA}} {{_ : FUNEXT}} {{_ : PTRUNC}} (A : U) → [[ A ]] → (P : U) → is-prop P → P ⇔ (P × A == A)
-lemma-14 A pa P P-is-prop = to , from
+lemma-14-A : LEM → DNE
+lemma-14-A lem P P-is-prop negnegP with lem P P-is-prop
+lemma-14-A lem P P-is-prop negnegP | inl p = p
+lemma-14-A lem P P-is-prop negnegP | inr np = ⊥-rec (negnegP np)
+
+lemma-14-B : {{_ : FUNEXT0}} → DNE → LEM
+lemma-14-B dne P P-is-prop = dne (P ⊔ ¬ P) (prop-dec-is-prop0 P P-is-prop) go
   where
-  to : P → P × A == A
-  to p = ua (
-    P × A
-      ≃⟨ ×-emap-l A (inhab-prop-equiv-Unit p P-is-prop) ⟩
-    Unit × A
-      ≃⟨ ×-Unit ⟩
-    A
-      ≃∎)
-  from : P × A == A → P
-  from q = coe (! claim-D) unit
-    where
-    claim-A : [[ P × A ]] == [[ A ]]
-    claim-A = ap [[_]] q
-    claim-B : [[ P × A ]] == Unit
-    claim-B = claim-A ∙ ua (inhab-prop-equiv-Unit pa PTrunc-level)
-    claim-C : [[ P ]] × [[ A ]] == Unit
-    claim-C = ! (ua [[]]×) ∙ claim-B
-    claim-D : P == Unit
-    claim-D = ua (
-      P
-        ≃⟨ ([[]]prop P-is-prop) ⁻¹ ⟩
-      [[ P ]]
-        ≃⟨ ×-Unit-r ⁻¹ ⟩
-      [[ P ]] × Unit
-        ≃⟨ ×-emap-r [[ P ]] ((inhab-prop-equiv-Unit pa PTrunc-level) ⁻¹) ⟩
-      [[ P ]] × [[ A ]]
-        ≃∎
-      ) ∙ claim-C
+  go : ¬ (¬ (P ⊔ ¬ P))
+  go n = n (inr (λ p → n (inl p)))

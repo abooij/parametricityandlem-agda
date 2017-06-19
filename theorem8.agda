@@ -20,7 +20,7 @@ theorem-8 P Q P-inv Q-inv total X Y negPX negQY A = claim-E
       ≃⟨ ⊔≃
         (×≃ (inhab-¬-Empty0 a) (ide X))
         (×≃
-          (inhab-prop-equiv-Unit (λ negA → negA a) ¬-is-prop0)
+          (inhab-prop-equiv-Unit (¬¬η a) ¬-is-prop0)
           (ide Y)
         )
        ⟩
